@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  pigeonpost
+//  pigeonpost-app
 //
 //  Created by Charlotte McHugh on 9/7/18.
 //  Copyright © 2018 Charlotte McHugh. All rights reserved.
