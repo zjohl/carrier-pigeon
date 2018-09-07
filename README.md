@@ -1,2 +1,2 @@
 # carrier-pigeon
-It carries things
+It carries things (such as chalk)
