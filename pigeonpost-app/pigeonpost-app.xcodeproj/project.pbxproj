@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		048CE9EBC84627BC3253037B /* libPods-pigeonpost-app.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5026EB8BA2183D56F445469 /* libPods-pigeonpost-app.a */; };
 		18326AE72143196F0020EB59 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18326AE62143196F0020EB59 /* AppDelegate.swift */; };
 		18326AE92143196F0020EB59 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18326AE82143196F0020EB59 /* ViewController.swift */; };
 		18326AEC2143196F0020EB59 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18326AEA2143196F0020EB59 /* Main.storyboard */; };
@@ -22,6 +23,9 @@
 		18326AED2143196F0020EB59 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		18326AF02143196F0020EB59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		18326AF22143196F0020EB59 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		515E97BF7B6C397479D18E8B /* Pods-pigeonpost-app.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pigeonpost-app.debug.xcconfig"; path = "Pods/Target Support Files/Pods-pigeonpost-app/Pods-pigeonpost-app.debug.xcconfig"; sourceTree = "<group>"; };
+		996A3AE50B240682D994E45C /* Pods-pigeonpost-app.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pigeonpost-app.release.xcconfig"; path = "Pods/Target Support Files/Pods-pigeonpost-app/Pods-pigeonpost-app.release.xcconfig"; sourceTree = "<group>"; };
+		D5026EB8BA2183D56F445469 /* libPods-pigeonpost-app.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-pigeonpost-app.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +33,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				048CE9EBC84627BC3253037B /* libPods-pigeonpost-app.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		15C4A001C73E89E2236C2EEF /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				515E97BF7B6C397479D18E8B /* Pods-pigeonpost-app.debug.xcconfig */,
+				996A3AE50B240682D994E45C /* Pods-pigeonpost-app.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		18326ADA2143196F0020EB59 = {
 			isa = PBXGroup;
 			children = (
 				18326AE52143196F0020EB59 /* pigeonpost-app */,
 				18326AE42143196F0020EB59 /* Products */,
+				15C4A001C73E89E2236C2EEF /* Pods */,
+				414A11213836EEA27E2B8BAB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,6 +80,14 @@
 			path = "pigeonpost-app";
 			sourceTree = "<group>";
 		};
+		414A11213836EEA27E2B8BAB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D5026EB8BA2183D56F445469 /* libPods-pigeonpost-app.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -71,9 +95,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 18326AF52143196F0020EB59 /* Build configuration list for PBXNativeTarget "pigeonpost-app" */;
 			buildPhases = (
+				923EF470D7D2F8F70175552D /* [CP] Check Pods Manifest.lock */,
 				18326ADF2143196F0020EB59 /* Sources */,
 				18326AE02143196F0020EB59 /* Frameworks */,
 				18326AE12143196F0020EB59 /* Resources */,
+				176DEEAB6EA211E75CFC02C5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -129,6 +155,45 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		176DEEAB6EA211E75CFC02C5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-pigeonpost-app/Pods-pigeonpost-app-frameworks.sh",
+				"${PODS_ROOT}/DJI-SDK-iOS/iOS_Mobile_SDK/DJISDK.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DJISDK.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-pigeonpost-app/Pods-pigeonpost-app-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		923EF470D7D2F8F70175552D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-pigeonpost-app-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		18326ADF2143196F0020EB59 /* Sources */ = {
@@ -278,9 +343,12 @@
 		};
 		18326AF62143196F0020EB59 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 515E97BF7B6C397479D18E8B /* Pods-pigeonpost-app.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = "\"${PODS_ROOT}/Headers/Public\"";
 				INFOPLIST_FILE = "pigeonpost-app/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -295,9 +363,12 @@
 		};
 		18326AF72143196F0020EB59 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 996A3AE50B240682D994E45C /* Pods-pigeonpost-app.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				ENABLE_BITCODE = NO;
+				HEADER_SEARCH_PATHS = "\"${PODS_ROOT}/Headers/Public\"";
 				INFOPLIST_FILE = "pigeonpost-app/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
