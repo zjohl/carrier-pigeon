@@ -2,6 +2,11 @@
 
 ### Local Development
 
+Clone the `carrier-pigeon` repo on your local machine.
+
+Install [ruby](https://www.ruby-lang.org/en/documentation/installation/)
+
+Install rails using `gem install rails`.
 
 In a terminal, run `rails s` from the `pigeonpost-backend` dir. Navigate to `http://localhost:3000/` to see your local server.
 
