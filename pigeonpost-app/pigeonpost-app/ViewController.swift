@@ -9,8 +9,8 @@
 import UIKit
 import DJISDK
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController, DJISDKManagerDelegate {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -21,6 +21,44 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // The following code up to TEXT FIELDS section is referenced from DJI's ImportSDKDemo project:
+    // https://github.com/DJI-Mobile-SDK-Tutorials/iOS-ImportAndActivateSDKInXcode-Swift
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        DJISDKManager.registerApp(with: self)
+    }
+    
+    func showAlertViewWithTitle(title: String, withMessage message: String) {
+        
+        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction.init(title:"OK", style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+        
+    }
+    
+    // DJISDKManagerDelegate Methods
+    func productConnected(_ product: DJIBaseProduct?) {
+        print("Product Connected")
+    }
+    
+    func productDisconnected() {
+                print("Product Disconnected")
+    }
+    
+    func appRegisteredWithError(_ error: Error?) {
+        var message = "Register App Successed!"
+        if (error != nil) {
+            message = "Register app failed! Please enter your app key and check the network."
+        } else{
+            print(message);
+        }
+        
+        // testing
+        //self.showAlertViewWithTitle(title:"Register App", withMessage: message)
+    }
+
     // TEXT FIELDS *********************************
     // login page
     @IBOutlet weak var password: UITextField!
