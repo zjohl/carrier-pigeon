@@ -1,0 +1,243 @@
+openapi: 3.0.0
+info:
+  title: "Pigeon Post"
+  description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
+  version: "0.0.1"
+servers:
+  - url: http://api.example.com/v1
+    description: "TODO: set base path for API"
+tags:
+- name: "drone"
+  description: "Information about the drone's state"
+- name: "navigation"
+  description: "Drone flight path, waypoints, and navigation"
+- name: "user"
+  description: "User information"
+
+paths:
+  /drone:
+    get:
+      tags:
+      - "drone"
+      summary: "List all drones"
+      operationId: "getAllDrones"
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Drone"
+  /drone/{id}:
+    get:
+      tags:
+      - "drone"
+      summary: "Retreive current state of a drone"
+      operationId: "getDroneById"
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: integer
+        required: true
+        description: Numeric ID of the user to get
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Drone'
+    put:
+      tags:
+      - "drone"
+      summary: "Set current state of a drone"
+      operationId: "setDroneById"
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: integer
+        description: "ID number of drone to update"
+        required: true
+      requestBody:
+        description: "Current state of the drone"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Drone'
+      responses:
+        204:
+          description: "successful operation"
+        404:
+          description: "Unknown drone ID"
+
+  /user/{id}:
+    get:
+      tags:
+      - "user"
+      summary: "Get user info"
+      operationId: "getUserInfoById"
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: integer
+        description: "User ID"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /user/{id}/contacts:
+    get:
+      tags:
+      - "user"
+      summary: "List of a user's contacts"
+      operationId: "getContactsForUser"
+      parameters:
+      - name: "id"
+        in: "path"
+        schema:
+          type: integer
+        description: "User ID"
+        required: true
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/User"
+  
+  /contacts:
+    put:
+      tags:
+      - "user"
+      summary: "Add two users to each others' contacts lists"
+      operationId: "connectUsers"
+      parameters: 
+      - name: "userId1"
+        in: "query"
+        schema:
+          type: integer
+        required: true
+      - name: "userId2"
+        in: "query"
+        schema:
+          type: integer
+        required: true
+      responses:
+        204:
+          description: "successful operation"
+        404:
+          description: "One or both users do not exist"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete two users from each others' contacts lists"
+      operationId: "deleteUsers"
+      parameters: 
+      - name: "userId1"
+        in: "query"
+        schema:
+          type: integer
+        required: true
+      - name: "userId2"
+        in: "query"
+        schema:
+          type: integer
+        required: true
+      responses:
+        204:
+          description: "successful operation"
+        404:
+          description: "One or both users do not exist"
+          
+  /route:
+    post:
+      tags:
+      - "navigation"
+      summary: "Calculate a route from the drone position to the given destination"
+      operationId: "routeToPoint"
+      parameters:
+      - name: "droneId"
+        in: "query"
+        schema:
+          type: integer
+        required: true
+      requestBody:
+        description: "Start and end coordinates"
+        content:
+          application/json:
+            schema:
+              properties:
+                startCoordinates:
+                  $ref: "#/components/schemas/Coordinates"
+                endCoordinates:
+                  $ref: "#/components/schemas/Coordinates"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+
+components:
+  schemas:
+    Drone:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+        position:
+          $ref: "#/components/schemas/Coordinates"
+        batteryPercent:
+          type: "integer"
+          format: "int32"
+          minimum: 0
+          maximum: 100
+        inFlight:
+          type: "boolean"
+        destination:
+          $ref: "#/components/schemas/Coordinates"
+    Coordinates:
+      type: "object"
+      required:
+      - "longitude"
+      - "latitude"
+      properties:
+        latitude:
+          type: "number"
+          format: "double"
+        longitude:
+          type: "number"
+          format: "double"
+    User:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        email:
+          type: "string"
+          example: "user@example.com"
+        id:
+          type: "integer"
+          format: "int32"
+    Route:
+      type: "object"
+      properties:
+        isDone:
+          type: boolean
+          default: false
+      # TODO once we know what the drone needs to set waypoints
