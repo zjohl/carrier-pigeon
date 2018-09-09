@@ -4,8 +4,8 @@ info:
   description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
   version: "0.0.1"
 servers:
-  - url: http://api.example.com/v1
-    description: "TODO: set base path for API"
+  - url: https://shielded-mesa-50019.herokuapp.com/api/
+    description: "TODO: review base path for API"
 tags:
 - name: "drone"
   description: "Information about the drone's state"
