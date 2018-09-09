@@ -14,4 +14,6 @@ If you get an error about a missing db, run `rails db:create` and then try start
 
 ### Deployment
 
+If the deploy has a migration, run `heroku run rake db:migrate` first.
+
 Run `git subtree push --prefix pigeonpost-backend heroku master` from the root directory of the project.
