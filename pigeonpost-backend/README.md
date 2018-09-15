@@ -4,9 +4,15 @@
 
 Clone the `carrier-pigeon` repo on your local machine.
 
-Install [ruby](https://www.ruby-lang.org/en/documentation/installation/)
+1. Install [ruby](https://www.ruby-lang.org/en/documentation/installation/)
 
-Install rails using `gem install rails`.
+2. Install nodejs [here](https://nodejs.org/en/download/)
+
+3. Install postgres using `gem install pg`.
+
+4. Install rails using `gem install rails`.
+
+The above steps have their own dependencies that you might need to install first.
 
 In a terminal, run `rails s` from the `pigeonpost-backend` dir. Navigate to `http://localhost:3000/` to see your local server.
 
