@@ -8,8 +8,14 @@ module Api
 
     def show
       render partial: "shared/json/user.json", locals: {
-          users: User.find(params[:id]),
+          users: User.find(params[:email]),
       }
+    end
+
+    def create
+      params.require(:email).permit(:first_name, :last_name, :password)
+
+      User.create(email: params[:email], first_name: params[:first_name], last_name: params[:last_name], password: params[:password])
     end
   end
 end
