@@ -2,10 +2,10 @@ openapi: 3.0.0
 info:
   title: "Pigeon Post"
   description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
-  version: "0.0.1"
+  version: "0.1.0"
 servers:
-  - url: https://shielded-mesa-50019.herokuapp.com/api/
-    description: "TODO: review base path for API"
+  - url: "https://shielded-mesa-50019.herokuapp.com/api"
+    description: "API server URL"
 tags:
 - name: "drone"
   description: "Information about the drone's state"
@@ -13,6 +13,8 @@ tags:
   description: "Drone flight path, waypoints, and navigation"
 - name: "user"
   description: "User information"
+- name: "delivery"
+  description: "Delivery history and status"
 
 paths:
   /drone:
@@ -75,7 +77,7 @@ paths:
         404:
           description: "Unknown drone ID"
 
-  /user/{id}:
+  /user/:
     get:
       tags:
       - "user"
@@ -95,29 +97,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-
-  /user/{id}/contacts:
-    get:
+    post:
       tags:
       - "user"
-      summary: "List of a user's contacts"
-      operationId: "getContactsForUser"
-      parameters:
-      - name: "id"
-        in: "path"
-        schema:
-          type: integer
-        description: "User ID"
-        required: true
+      summary: "Create user"
+      operationId: "createUser"
       responses:
         200:
           description: "successful operation"
           content:
             application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/User"
+                $ref: '#/components/schemas/User'
   
   /contacts:
     put:
@@ -193,6 +184,43 @@ paths:
               schema:
                 $ref: "#/components/schemas/Route"
 
+  /delivery:
+    get:
+      tags:
+      - "delivery"
+      summary: "Get past deliveries for a user"
+      parameters:
+        - name: "userId"
+          in: "query"
+          schema:
+            type: integer
+          required: true
+        - name: "limit"
+          in: "query"
+          schema:
+            type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Delivery"
+    post:
+      tags:
+      - "delivery"
+      summary: "Send a drone on a delivery"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+      responses:
+        200:
+          description: "successful operation"
+
 components:
   schemas:
     Drone:
@@ -208,7 +236,7 @@ components:
           minimum: 0
           maximum: 100
         inFlight:
-          type: "boolean"
+          type: "string"
         destination:
           $ref: "#/components/schemas/Coordinates"
     Coordinates:
@@ -226,7 +254,9 @@ components:
     User:
       type: "object"
       properties:
-        name:
+        firstName:
+          type: "string"
+        lastName:
           type: "string"
         email:
           type: "string"
@@ -234,6 +264,12 @@ components:
         id:
           type: "integer"
           format: "int32"
+        password:
+          type: "string"
+        contacts:
+          type: "array"
+          items: 
+            type: "string"
     Route:
       type: "object"
       properties:
@@ -241,3 +277,28 @@ components:
           type: boolean
           default: false
       # TODO once we know what the drone needs to set waypoints
+    Delivery:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+        droneId:
+          type: "integer"
+        status:
+          type: "string"
+        createdAt:
+          description: "Epoch millisecond of request time"
+          type: "integer"
+          format: "int64"
+        updatedAt:
+          description: "Epoch millisecond of last update time"
+          type: "integer"
+          format: "int64"
+        origin:
+          $ref: "#/components/schemas/Coordinates"
+        destination:
+          $ref: "#/components/schemas/Coordinates"
+        sender:
+          $ref: "#/components/schemas/User"
+        receiver:
+          $ref: "#/components/schemas/User"
