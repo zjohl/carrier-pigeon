@@ -27,6 +27,12 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         DJISDKManager.registerApp(with: self)
+        //let connect_result = DJISDKManager.startConnectionToProduct()
+        //print("Connection:")
+        //print(connect_result)
+        //let product_result = DJISDKManager.product()
+        //print("Product:")
+        //print(product_result ?? "none")
     }
     
     func showAlertViewWithTitle(title: String, withMessage message: String) {
@@ -36,15 +42,6 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
         
-    }
-    
-    // DJISDKManagerDelegate Methods
-    func productConnected(_ product: DJIBaseProduct?) {
-        print("Product Connected")
-    }
-    
-    func productDisconnected() {
-                print("Product Disconnected")
     }
     
     func appRegisteredWithError(_ error: Error?) {
@@ -114,7 +111,7 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
             }
     }
     
-       // HOME PAGE  *********************************
+    // HOME PAGE  *********************************
     @IBAction func signOutButton(_ sender: Any) {
         performSegue(withIdentifier: "homeToLogin", sender: sender)
     }
@@ -132,6 +129,13 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     }
     
     // CONTACTS PAGE  *********************************
+    var contacts = [String]()
+    
+    @IBAction func contactsRefresh(_ sender: Any) {
+        let arr = getUsers()
+        print(arr)
+    }
+    
     @IBAction func contactsBackButton(_ sender: Any) {
         performSegue(withIdentifier: "contactsToHome", sender: sender)
     }
@@ -145,6 +149,50 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     @IBAction func settingsBckButton(_ sender: Any) {
         performSegue(withIdentifier: "settingsToHome", sender: sender)
     }
+    
+    // REQUESTS FUNCTION   ********************************
+    func getUsers() -> Array<String> {
+        // Set up the URL request
+        let endpoint: String = "https://shielded-mesa-50019.herokuapp.com/api/users"
+        guard let url = URL(string: endpoint) else {
+            print("Error: cannot create URL")
+            return []
+        }
+        let urlRequest = URLRequest(url: url)
+        
+        // set up the session
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        
+        // make the request
+        let task = session.dataTask(with: urlRequest) {
+            (data, response, error) in
+            // check for any errors
+            guard error == nil else {
+                print(error!)
+                return
+            }
+            // make sure we got data
+            guard let responseData = data else {
+                print("Error: did not receive data")
+                return
+            }
+            // parse the result as JSON
+            do {
+                guard let result = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: AnyObject] else {
+                    print("error trying to convert data to JSON")
+                    return
+                }
+                print(result.description)
+            } catch  {
+                print("error trying to convert data to JSON")
+                return
+            }
+        }
+        task.resume()
+        return []
+    }
+    
     
 }
 
