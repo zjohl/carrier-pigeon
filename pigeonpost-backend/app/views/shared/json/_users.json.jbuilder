@@ -1,4 +1,4 @@
-json.users users do |users|
+json.users users do |user|
   json.partial! "shared/json/user.json", locals: {
       user: user,
   }
