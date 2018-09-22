@@ -10,10 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_16_193125) do
+ActiveRecord::Schema.define(version: 2018_09_16_202942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "contacts", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "contact_id"
+    t.index ["user_id", "contact_id"], name: "index_contacts_on_user_id_and_contact_id", unique: true
+  end
+
+  create_table "drones", force: :cascade do |t|
+    t.float "latitude"
+    t.float "longitude"
+    t.float "destination_latitude"
+    t.float "destination_longitude"
+    t.string "status"
+    t.integer "battery_percent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email"
@@ -24,4 +41,6 @@ ActiveRecord::Schema.define(version: 2018_09_16_193125) do
     t.string "password"
   end
 
+  add_foreign_key "contacts", "users"
+  add_foreign_key "contacts", "users", column: "contact_id"
 end
