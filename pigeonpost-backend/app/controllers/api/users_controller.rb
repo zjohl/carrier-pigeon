@@ -20,7 +20,7 @@ module Api
 
       user = User.create!(email: params[:email], first_name: params[:first_name], last_name: params[:last_name], password: params[:password])
 
-      render partial: "shared/json/user.json", locals: {
+      render partial: "shared/json/user.json", status: :created, locals: {
           user: user,
       }
     end
