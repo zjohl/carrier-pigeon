@@ -3,10 +3,10 @@ class CreateDrones < ActiveRecord::Migration[5.2]
     create_table :drones do |t|
     	t.float :latitude
     	t.float :longitude
- 		t.float :destinationLatitude
- 		t.float :destinationLongitude
+ 		t.float :destination_latitude
+ 		t.float :destination_longitude
     	t.string :status
-    	t.integer :batteryPercent
+    	t.integer :battery_percent
     	t.timestamps
     end
   end
