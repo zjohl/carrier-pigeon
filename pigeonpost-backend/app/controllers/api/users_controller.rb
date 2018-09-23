@@ -10,8 +10,10 @@ module Api
     end
 
     def show
-      render partial: "shared/json/user.json", locals: {
-          user: User.find(params[:id]),
+      user = User.find(params[:id])
+      render partial: "shared/json/user_with_contacts.json", locals: {
+          user: user,
+          contacts: user.contacts,
       }
     end
 

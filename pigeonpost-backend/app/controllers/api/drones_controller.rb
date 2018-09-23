@@ -23,7 +23,7 @@ module Api
                             status: params[:status],
                             battery_percent: params[:battery_percent])
 
-      render partial: "shared/json/drone.json", locals: {
+      render partial: "shared/json/drone.json", status: :created, locals: {
           drone: drone,
       }
     end
