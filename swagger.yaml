@@ -2,10 +2,10 @@ openapi: 3.0.0
 info:
   title: "Pigeon Post"
   description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
-  version: "0.2.0"
+  version: "0.3.0"
 servers:
-  - url: "https://shielded-mesa-50019.herokuapp.com/api"
-    description: "API server URL"
+- url: "https://shielded-mesa-50019.herokuapp.com/api"
+  description: "API server URL"
 tags:
 - name: "drone"
   description: "Information about the drone's state"
@@ -96,7 +96,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserWithContacts'
     post:
       tags:
       - "user"
@@ -109,14 +109,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-  
+
   /contacts:
     put:
       tags:
       - "user"
       summary: "Add two users to each others' contacts lists"
       operationId: "connectUsers"
-      parameters: 
+      parameters:
       - name: "userId1"
         in: "query"
         schema:
@@ -137,7 +137,7 @@ paths:
       - "user"
       summary: "Delete two users from each others' contacts lists"
       operationId: "deleteUsers"
-      parameters: 
+      parameters:
       - name: "userId1"
         in: "query"
         schema:
@@ -153,7 +153,7 @@ paths:
           description: "successful operation"
         404:
           description: "One or both users do not exist"
-          
+
   /routes:
     post:
       tags:
@@ -190,15 +190,15 @@ paths:
       - "delivery"
       summary: "Get past deliveries for a user"
       parameters:
-        - name: "userId"
-          in: "query"
-          schema:
-            type: integer
-          required: true
-        - name: "limit"
-          in: "query"
-          schema:
-            type: "integer"
+      - name: "userId"
+        in: "query"
+        schema:
+          type: integer
+        required: true
+      - name: "limit"
+        in: "query"
+        schema:
+          type: "integer"
       responses:
         200:
           description: "successful operation"
@@ -266,10 +266,35 @@ components:
           format: "int32"
         password:
           type: "string"
+    UserWithContacts:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        email:
+          type: "string"
+          example: "user@example.com"
+        id:
+          type: "integer"
+          format: "int32"
+        password:
+          type: "string"
         contacts:
           type: "array"
-          items: 
-            type: "string"
+          items:
+            $ref: "#/components/schemas/Contact"
+    Contact:
+      type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        id:
+          type: "integer"
+          format: "int32"
     Route:
       type: "object"
       properties:

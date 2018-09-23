@@ -35,6 +35,35 @@ RSpec.describe "Users", :type => :request do
     expect(json['lastName']).to eq(user.last_name)
   end
 
+  it "users include a list of contacts" do
+    user1 = FactoryBot.create(:user)
+    user2 = FactoryBot.create(:user)
+    user3 = FactoryBot.create(:user)
+
+    UserContact.create!(user_id: user1.id, contact_id: user2.id)
+    UserContact.create!(user_id: user1.id, contact_id: user3.id)
+
+    get "/api/users/#{user1.id}"
+
+    expect(response.content_type).to eq("application/json")
+    expect(response).to have_http_status(:ok)
+
+    json = JSON.parse(response.body)
+
+    expect(json['contacts']).to eq([
+        {
+            "id" => user2.id,
+            "firstName" => user2.first_name,
+            "lastName" => user2.last_name,
+        },
+        {
+            "id" => user3.id,
+            "firstName" => user3.first_name,
+            "lastName" => user3.last_name,
+        }
+    ])
+  end
+
   it "can create a user" do
     post "/api/users", params: {
         email: "some-email",
