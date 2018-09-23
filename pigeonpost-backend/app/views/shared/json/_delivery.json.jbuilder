@@ -13,13 +13,11 @@ json.sender do
 	json.id             sender.id
 	json.firstName      sender.first_name
 	json.lastName       sender.last_name
-	json.email          sender.email
 end
 json.receiver do
 	json.id             receiver.id
 	json.firstName      receiver.first_name
 	json.lastName       receiver.last_name
-	json.email          receiver.email
 end
 json.createdDate		delivery.created_at
 json.updatedDate		delivery.updated_at
