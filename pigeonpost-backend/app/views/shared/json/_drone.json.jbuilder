@@ -8,6 +8,6 @@ json.destination do
 	json.longitude 		drone.destination_longitude
 end
 json.status				drone.status
-json.batteryPercent	drone.battery_percent
+json.batteryPercent		drone.battery_percent
 json.createdDate		drone.created_at
 json.updatedDate		drone.updated_at
