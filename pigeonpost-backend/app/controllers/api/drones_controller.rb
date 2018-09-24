@@ -16,10 +16,10 @@ module Api
     end
 
     def create
-      params.permit(:latitude, :longitude, :status, :battery_percent)
+      params.permit(:status, :battery_percent, position: [:latitude, :longitude])
 
-      drone = Drone.create!(latitude: params[:latitude],
-                            longitude: params[:longitude],
+      drone = Drone.create!(latitude: params[:position][:latitude],
+                            longitude: params[:position][:longitude],
                             status: params[:status],
                             battery_percent: params[:battery_percent])
 

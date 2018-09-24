@@ -29,16 +29,18 @@ RSpec.describe "Drones", :type => :request do
     json = JSON.parse(response.body)
 
     expect(json['id']).to eq(drone.id)
-    expect(json['coordinates']['latitude']).to eq(drone.latitude)
-    expect(json['coordinates']['longitude']).to eq(drone.longitude)
+    expect(json['position']['latitude']).to eq(drone.latitude)
+    expect(json['position']['longitude']).to eq(drone.longitude)
     expect(json['status']).to eq(drone.status)
     expect(json['batteryPercent']).to eq(drone.battery_percent)
   end
 
   it "can create a new drone" do
     post "/api/drones", params: {
-       latitude: 17,
-       longitude: 23,
+       position: {
+        latitude: 17,
+        longitude: 23
+       },
        status: "cool",
        battery_percent: 1,
     }
@@ -48,8 +50,8 @@ RSpec.describe "Drones", :type => :request do
 
     json = JSON.parse(response.body)
 
-    expect(json['coordinates']['latitude']).to eq(17)
-    expect(json['coordinates']['longitude']).to eq(23)
+    expect(json['position']['latitude']).to eq(17)
+    expect(json['position']['longitude']).to eq(23)
     expect(json['status']).to eq("cool")
     expect(json['batteryPercent']).to eq(1)
   end

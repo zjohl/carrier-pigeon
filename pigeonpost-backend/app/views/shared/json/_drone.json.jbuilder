@@ -1,5 +1,5 @@
 json.id					drone.id
-json.coordinates do
+json.position do
 	json.latitude 		drone.latitude
 	json.longitude 		drone.longitude
 end
