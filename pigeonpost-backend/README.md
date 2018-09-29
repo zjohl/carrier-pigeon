@@ -22,6 +22,10 @@ If you get an error about a missing db, run `rails db:create` and then try start
 
 ### Deployment
 
+The backend app will be automatically deployed when we commit to master.
+
+To manually deploy:
+
 I believe you need to make a heroku account before I can add you as a collaborator. If you send me the email you used I can add you to the host.
 
 If the deploy has a migration, run `heroku run rake db:migrate` first.
