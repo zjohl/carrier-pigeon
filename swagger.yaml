@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: "Pigeon Post"
   description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
-  version: "0.3.0"
+  version: "0.4.0"
 servers:
 - url: "https://shielded-mesa-50019.herokuapp.com/api"
   description: "API server URL"
@@ -295,6 +295,7 @@ components:
         id:
           type: "integer"
           format: "int32"
+          description: "Foreign key to the corresponding User object"
     Route:
       type: "object"
       properties:
@@ -324,6 +325,6 @@ components:
         destination:
           $ref: "#/components/schemas/Coordinates"
         sender:
-          $ref: "#/components/schemas/User"
+          $ref: "#/components/schemas/Contact"
         receiver:
-          $ref: "#/components/schemas/User"
+          $ref: "#/components/schemas/Contact"
