@@ -1,7 +1,6 @@
 module Api
   class DeliveriesController < ApplicationController
     # Make sure to remove this
-    skip_before_action :verify_authenticity_token
 
     def index
       render partial: "shared/json/deliveries.json", locals: {

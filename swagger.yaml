@@ -17,6 +17,25 @@ tags:
   description: "Delivery history and status"
 
 paths:
+  /auth:
+    get:
+      summary: "Authenticate User"
+      parameters:
+      - name: "email":
+        schema:
+          type: string
+        required: true
+        description: "Email address of user"
+      - name: "password":
+        schema:
+          type: string
+        required: true
+        description: "Password of user"
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: user not found
   /drones:
     get:
       tags:
