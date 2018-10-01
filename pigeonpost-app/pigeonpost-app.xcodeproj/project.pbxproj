@@ -346,7 +346,9 @@
 			baseConfigurationReference = 515E97BF7B6C397479D18E8B /* Pods-pigeonpost-app.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 66Y4CBK9K7;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "\"${PODS_ROOT}/Headers/Public\"";
 				INFOPLIST_FILE = "pigeonpost-app/Info.plist";
@@ -356,6 +358,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "n-a.pigeonpost-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -366,7 +369,9 @@
 			baseConfigurationReference = 996A3AE50B240682D994E45C /* Pods-pigeonpost-app.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 66Y4CBK9K7;
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "\"${PODS_ROOT}/Headers/Public\"";
 				INFOPLIST_FILE = "pigeonpost-app/Info.plist";
@@ -376,6 +381,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "n-a.pigeonpost-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

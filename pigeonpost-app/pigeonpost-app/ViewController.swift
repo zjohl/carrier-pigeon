@@ -97,6 +97,41 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     }
     
     @IBAction func createAccountButton(_ sender: Any) {
+        
+        
+        let dict = ["email":email.text!, "first_name": fname.text!, "last_name": lname.text!,"password":newPswd.text! ] as [String : Any]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
+            return
+        }
+        
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData as Data
+        request.timeoutInterval = 10
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            
+            if let response = response {
+                print("JSON Response: \(response)")
+            }
+            
+            
+            if let data = data {
+                do {
+                    let parseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
+                    
+                    let meta = parseJSON!["meta"] as? [String:Any]
+                    
+                }catch { print(error) }
+            }
+            }.resume()
+    }
+        /*
             if !(email.text!.contains("@")) || !(email.text!.contains(".")) || !(email.text!.count >= 5) {
                 print("Invalid email.")
                 newUsrErr.text = "Invalid email."
@@ -108,8 +143,7 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
                 newUsrErr.text = "Password must be greater than 3 characters."
             } else {
                 performSegue(withIdentifier: "signUpToHome", sender: sender)
-            }
-    }
+            }*/
     
     // HOME PAGE  *********************************
     @IBAction func signOutButton(_ sender: Any) {
