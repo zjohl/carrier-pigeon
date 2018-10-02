@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: "Pigeon Post"
   description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
-  version: "0.4.0"
+  version: "0.4.1"
 servers:
 - url: "https://shielded-mesa-50019.herokuapp.com/api"
   description: "API server URL"
@@ -19,14 +19,18 @@ tags:
 paths:
   /auth:
     get:
+      tags:
+      - "user"
       summary: "Authenticate User"
       parameters:
-      - name: "email":
+      - name: "email"
+        in: "query"
         schema:
           type: string
         required: true
         description: "Email address of user"
-      - name: "password":
+      - name: "password"
+        in: "query"
         schema:
           type: string
         required: true
