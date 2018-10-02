@@ -76,15 +76,34 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
 
     // LOGIN PAGE  *********************************
     @IBAction func loginButton(_ sender: Any) {
-        // TODO : check usr/pswd against db, hash password
-        if username.text!.count > 0 && password.text!.count > 0 {
-            print("Success")
-            performSegue(withIdentifier: "loginToHome", sender: sender)
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/auth?email=" + username.text! + "&password=" + password.text!) else { return }
+        
+        var statusCode: Int = 0
+        var request = URLRequest(url: url)
+        let semaphore = DispatchSemaphore(value: 0)
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 10
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Status Code: \(httpResponse.statusCode)")
+                statusCode = httpResponse.statusCode
+            }
+            semaphore.signal()
+        }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        if statusCode == 200 {
+            print("Login success")
+            self.performSegue(withIdentifier: "loginToHome", sender: sender)
         }
         else {
-            errMsg.text = "Invalid login credentials."
-            print("Invalid login credentials.")
+            print("Login Failed")
+            self.errMsg.text = "Invalid login credentials."
         }
+        
     }
     
     @IBAction func signUpButton(_ sender: Any) {
