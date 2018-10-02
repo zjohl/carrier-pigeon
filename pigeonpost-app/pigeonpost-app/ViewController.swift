@@ -76,26 +76,15 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
 
     // LOGIN PAGE  *********************************
     @IBAction func loginButton(_ sender: Any) {
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users?email=" + username.text!) else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 10
-        
-        let session = URLSession.shared
-        session.dataTask(with: request) { (data, response, error) in
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                print("Status Code: \(httpResponse.statusCode)")
-                if httpResponse.statusCode == 200 {
-                    print("Login success")
-                    self.performSegue(withIdentifier: "loginToHome", sender: sender)
-                }
-            }
-        }.resume()
-        self.errMsg.text = "Invalid login credentials."
-        print("Invalid login credentials.")
+        // TODO : check usr/pswd against db, hash password
+        if username.text!.count > 0 && password.text!.count > 0 {
+            print("Success")
+            performSegue(withIdentifier: "loginToHome", sender: sender)
+        }
+        else {
+            errMsg.text = "Invalid login credentials."
+            print("Invalid login credentials.")
+        }
     }
     
     @IBAction func signUpButton(_ sender: Any) {
@@ -141,9 +130,20 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
                 }catch { print(error) }
             }
             }.resume()
-        performSegue(withIdentifier: "signUpToHome", sender: sender)
     }
-
+        /*
+            if !(email.text!.contains("@")) || !(email.text!.contains(".")) || !(email.text!.count >= 5) {
+                print("Invalid email.")
+                newUsrErr.text = "Invalid email."
+            } else if (fname.text!.count < 1) || (fname.text!.count < 1) {
+                print("First and last name are required.")
+                newUsrErr.text = "First and last name are required."
+            } else if newPswd.text!.count < 3 {
+                print("Password must be greater than 3 characters.")
+                newUsrErr.text = "Password must be greater than 3 characters."
+            } else {
+                performSegue(withIdentifier: "signUpToHome", sender: sender)
+            }*/
     
     // HOME PAGE  *********************************
     @IBAction func signOutButton(_ sender: Any) {
