@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: "Pigeon Post"
   description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
-  version: "0.4.1"
+  version: "0.5.0"
 servers:
 - url: "https://shielded-mesa-50019.herokuapp.com/api"
   description: "API server URL"
@@ -140,15 +140,15 @@ paths:
       summary: "Add two users to each others' contacts lists"
       operationId: "connectUsers"
       parameters:
-      - name: "userId1"
+      - name: "user_email_1"
         in: "query"
         schema:
-          type: integer
+          type: string
         required: true
-      - name: "userId2"
+      - name: "user_email_2"
         in: "query"
         schema:
-          type: integer
+          type: string
         required: true
       responses:
         204:
@@ -161,15 +161,15 @@ paths:
       summary: "Delete two users from each others' contacts lists"
       operationId: "deleteUsers"
       parameters:
-      - name: "userId1"
+      - name: "user_email_1"
         in: "query"
         schema:
-          type: integer
+          type: string
         required: true
-      - name: "userId2"
+      - name: "user_email_2"
         in: "query"
         schema:
-          type: integer
+          type: string
         required: true
       responses:
         204:

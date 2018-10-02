@@ -6,5 +6,8 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :show, :create, :update]
     resources :drones, only: [:index, :show, :create, :update]
     resources :deliveries, only: [:index, :show, :create, :update]
+    
+    resources :contacts, only: [:create]
+    delete "contacts", to: "contacts#destroy"
   end
 end
