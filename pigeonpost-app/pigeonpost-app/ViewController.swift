@@ -117,6 +117,18 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     
     @IBAction func createAccountButton(_ sender: Any) {
         
+         if !(email.text!.contains("@")) || !(email.text!.contains(".")) || !(email.text!.count >= 5) {
+         print("Invalid email.")
+         newUsrErr.text = "Invalid email."
+         } else if (fname.text!.count < 1) || (fname.text!.count < 1) {
+         print("First and last name are required.")
+         newUsrErr.text = "First and last name are required."
+         } else if newPswd.text!.count < 3 {
+         print("Password must be greater than 3 characters.")
+         newUsrErr.text = "Password must be greater than 3 characters."
+         } else {
+         
+         
         
         let dict = ["email":email.text!, "first_name": fname.text!, "last_name": lname.text!,"password":newPswd.text! ] as [String : Any]
         
@@ -149,20 +161,12 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
                 }catch { print(error) }
             }
             }.resume()
+            
+            performSegue(withIdentifier: "signUpToHome", sender: sender)
+            
+        }
     }
-        /*
-            if !(email.text!.contains("@")) || !(email.text!.contains(".")) || !(email.text!.count >= 5) {
-                print("Invalid email.")
-                newUsrErr.text = "Invalid email."
-            } else if (fname.text!.count < 1) || (fname.text!.count < 1) {
-                print("First and last name are required.")
-                newUsrErr.text = "First and last name are required."
-            } else if newPswd.text!.count < 3 {
-                print("Password must be greater than 3 characters.")
-                newUsrErr.text = "Password must be greater than 3 characters."
-            } else {
-                performSegue(withIdentifier: "signUpToHome", sender: sender)
-            }*/
+
     
     // HOME PAGE  *********************************
     @IBAction func signOutButton(_ sender: Any) {
