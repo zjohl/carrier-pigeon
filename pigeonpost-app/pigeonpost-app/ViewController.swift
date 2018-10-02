@@ -11,6 +11,8 @@ import DJISDK
 
 class ViewController: UIViewController, DJISDKManagerDelegate {
     
+    var current_user = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -93,17 +95,18 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
                 statusCode = httpResponse.statusCode
             }
             semaphore.signal()
+            
         }.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         if statusCode == 200 {
             print("Login success")
+            current_user = username.text!
             self.performSegue(withIdentifier: "loginToHome", sender: sender)
         }
         else {
             print("Login Failed")
             self.errMsg.text = "Invalid login credentials."
         }
-        
     }
     
     @IBAction func signUpButton(_ sender: Any) {
@@ -151,7 +154,6 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
                 print("JSON Response: \(response)")
             }
             
-            
             if let data = data {
                 do {
                     let parseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
@@ -190,7 +192,7 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     
     @IBAction func contactsRefresh(_ sender: Any) {
         let arr = getUsers()
-        print(arr)
+        //print(arr)
     }
     
     @IBAction func contactsBackButton(_ sender: Any) {
@@ -209,47 +211,24 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     
     // REQUESTS FUNCTION   ********************************
     func getUsers() -> Array<String> {
-        // Set up the URL request
-        let endpoint: String = "https://shielded-mesa-50019.herokuapp.com/api/users"
-        guard let url = URL(string: endpoint) else {
-            print("Error: cannot create URL")
-            return []
-        }
-        let urlRequest = URLRequest(url: url)
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return []}
         
-        // set up the session
-        let config = URLSessionConfiguration.default
-        let session = URLSession(configuration: config)
-        
-        // make the request
-        let task = session.dataTask(with: urlRequest) {
-            (data, response, error) in
-            // check for any errors
-            guard error == nil else {
-                print(error!)
-                return
-            }
-            // make sure we got data
-            guard let responseData = data else {
-                print("Error: did not receive data")
-                return
-            }
-            // parse the result as JSON
-            do {
-                guard let result = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: AnyObject] else {
-                    print("error trying to convert data to JSON")
-                    return
+        let names = [String]()
+        let semaphore = DispatchSemaphore(value: 0)
+        let session = URLSession.shared
+        session.dataTask(with: url) { (users, response, error) in
+            if let users = users {
+                print(users)
+                do {
+                    let json = try JSONSerialization.jsonObject(with: users, options: [])
+                    print(json)
+                } catch {
+                    print(error)
                 }
-                print(result.description)
-            } catch  {
-                print("error trying to convert data to JSON")
-                return
             }
-        }
-        task.resume()
-        return []
+                semaphore.signal()
+        }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        return names
     }
-    
-    
 }
-
