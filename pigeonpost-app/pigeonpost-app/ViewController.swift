@@ -12,26 +12,26 @@ import Foundation
 
 class ViewController: UIViewController, DJISDKManagerDelegate {
     
-    // VARIABL DECLARATIONS
-    
     var current_user = ""
+    
     // login page
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var username: UITextField!
+    @IBOutlet weak var errMsg: UILabel!
     
     // sign up page
     @IBOutlet weak var newPswd: UITextField!
     @IBOutlet weak var lname: UITextField!
     @IBOutlet weak var fname: UITextField!
     @IBOutlet weak var email: UITextField!
-    
-    // login
-    @IBOutlet weak var errMsg: UILabel!
-    
-    // sign up
     @IBOutlet weak var newUsrErr: UILabel!
     
-    //**************************************************************************
+    // settings page
+    @IBOutlet weak var updateEmail: UITextField!
+    @IBOutlet weak var updateFirstName: UITextField!
+    @IBOutlet weak var updateLastName: UITextField!
+    @IBOutlet weak var updatePassword: UITextField!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -170,92 +170,85 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
             
         }
     }
-
     
-    // HOME PAGE  *********************************
+    // SETTINGS PAGE  *********************************
+    @IBAction func settingsBckButton(_ sender: Any) {
+        performSegue(withIdentifier: "settingsToHome", sender: sender)
+    }
+}
+
+
+
+class HomeViewController: UIViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+    
     @IBAction func signOutButton(_ sender: Any) {
         performSegue(withIdentifier: "homeToLogin", sender: sender)
-    }
-    
-    @IBAction func contactsButton(_ sender: Any) {
-        performSegue(withIdentifier: "homeToContacts", sender: sender)
-    }
-    
-    @IBAction func delvieriesButton(_ sender: Any) {
-        performSegue(withIdentifier: "homeToDeliveries", sender: sender)
-    }
-    
-    @IBAction func settingsButton(_ sender: Any) {
-        performSegue(withIdentifier: "homeToSettings", sender: sender)
     }
     
     @IBAction func callDroneButton(_ sender: Any) {
         performSegue(withIdentifier: "homeToCallDrone", sender: sender)
     }
-    @IBAction func sendDroneButton(_ sender: UIButton) {
+    
+    @IBAction func sendDroneButton(_ sender: Any) {
         // TODO: Send delivery request to recipient
         let responseCode = 200
         if responseCode == 200 {
-            self.showAlertViewWithTitle(title:"Send Drone Request", withMessage: "Your delivery request has been sent! Check Pending Deliveries for updates.")
+            self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent! Check Pending Deliveries for updates.")
         }
         else {
             self.showAlertViewWithTitle(title:"Delivery Error", withMessage: "An unexpected error occurred. Please try again later.")
         }
     }
     
-    // CONTACTS PAGE  *********************************
+    @IBAction func settingsButton(_ sender: Any) {
+        performSegue(withIdentifier: "homeToSettings", sender: sender)
+    }
+    
+    @IBAction func deliveriesButton(_ sender: Any) {
+        performSegue(withIdentifier: "homeToDeliveries", sender: sender)
+    }
+    
+    @IBAction func contactsButton(_ sender: Any) {
+        performSegue(withIdentifier: "homeToContacts", sender: sender)
+    }
+
+    func showAlertViewWithTitle(title: String, withMessage message: String) {
+        
+        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction.init(title:"OK", style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+        
+    }
+}
+
+
+// CONTACTS PAGE
+class ContactsViewController: UIViewController {
+    
     var contacts = [String]()
+    @IBOutlet weak var email: UITextField!
     
-    @IBAction func contactsRefresh(_ sender: Any) {
-        let _ = getUsers()
-        //print(arr)
-    }
-    
-    @IBAction func contactsBackButton(_ sender: Any) {
-        performSegue(withIdentifier: "contactsToHome", sender: sender)
-    }
-    
-    // Add a new contact
-    @IBOutlet weak var newContactEmail: UITextField!
-    @IBAction func newContactButton(_ sender: Any) {
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/contacts?user_email_1=" + current_user + "&user_email_2=" + newContactEmail.text!) else { return }
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        var statusCode: Int = 0
-        var request = URLRequest(url: url)
-        let semaphore = DispatchSemaphore(value: 0)
-        request.httpMethod = "PUT"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 10
+        // Load existing contacts
+        // Currently just doing a get request on /users because idk if we have an endpoint for getting contacts?
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return }
         
-        let session = URLSession.shared
-        session.dataTask(with: request) { (data, response, error) in
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                print("Status Code: \(httpResponse.statusCode)")
-                statusCode = httpResponse.statusCode
-            }
-            semaphore.signal()
-            
-            }.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        if statusCode == 204 {
-            print("Contact added successfully")
-        }
-        else {
-            print("New contact request failed")
-        }
-    }
-    
-    // SETTINGS PAGE  *********************************
-    @IBAction func settingsBckButton(_ sender: Any) {
-        performSegue(withIdentifier: "settingsToHome", sender: sender)
-    }
-    
-    // REQUESTS FUNCTION   ********************************
-    func getUsers() -> Array<String> {
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return []}
-        
-        var names = [String]()
+        let names = [String]()
         let semaphore = DispatchSemaphore(value: 0)
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
@@ -271,22 +264,63 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
             } catch  {
                 print(error)
             }
-//            if let users = users {
-//                print(users)
-//                do {
-//                    let json = try JSONSerialization.jsonObject(with: users, options: [])
-//                    print(json)
-//                } catch {
-//                    print(error)
-//                }
-//            }
-                semaphore.signal()
-        }.resume()
+            //            if let users = users {
+            //                print(users)
+            //                do {
+            //                    let json = try JSONSerialization.jsonObject(with: users, options: [])
+            //                    print(json)
+            //                } catch {
+            //                    print(error)
+            //                }
+            //            }
+            semaphore.signal()
+            }.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        return names
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+    
+    @IBAction func backButton(_ sender: Any) {
+        performSegue(withIdentifier: "contactsToHome", sender: sender)
+    }
+    
+    @IBAction func sendRequestButton(_ sender: Any) {
+//        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/contacts?user_email_1=" + current_user + "&user_email_2=" + newContactEmail.text!) else { return }
+//
+//        var statusCode: Int = 0
+//        var request = URLRequest(url: url)
+//        let semaphore = DispatchSemaphore(value: 0)
+//        request.httpMethod = "PUT"
+//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+//        request.timeoutInterval = 10
+//
+//        let session = URLSession.shared
+//        session.dataTask(with: request) { (data, response, error) in
+//
+//            if let httpResponse = response as? HTTPURLResponse {
+//                print("Status Code: \(httpResponse.statusCode)")
+//                statusCode = httpResponse.statusCode
+//            }
+//            semaphore.signal()
+//
+//            }.resume()
+//        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+//        if statusCode == 204 {
+//            print("Contact added successfully")
+//        }
+//        else {
+//            print("New contact request failed")
+//        }
     }
 }
 
+// CALL DRONE PAGE
 class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     @IBOutlet weak var pickerView: UIPickerView!
@@ -370,6 +404,8 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     }
 }
 
+
+// DELIVERIES PAGE
 class DeliveriesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()

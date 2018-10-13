@@ -77,13 +77,13 @@
                         <outlet property="errMsg" destination="3BY-ME-N7b" id="zGb-H1-sZl"/>
                         <outlet property="password" destination="ERi-5D-QrA" id="0sD-Q4-PKC"/>
                         <outlet property="username" destination="3hw-N5-NK5" id="dsP-93-0kk"/>
-                        <segue destination="MA3-hc-X43" kind="show" identifier="loginToHome" id="Odl-Fe-bF7"/>
                         <segue destination="by5-Hs-POq" kind="show" identifier="loginToSignUp" id="K6r-sQ-wqu"/>
+                        <segue destination="MA3-hc-X43" kind="showDetail" identifier="loginToHome" id="Rex-IM-z4k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="669.60000000000002" y="31.934032983508249"/>
+            <point key="canvasLocation" x="290" y="-34"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="RiD-0c-FzC">
@@ -156,7 +156,7 @@
                         <outlet property="newPswd" destination="3II-DK-SE8" id="1YP-dh-nyt"/>
                         <outlet property="newUsrErr" destination="de7-0r-uS2" id="GIj-Dg-V0n"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="signUpToLogin" id="vOC-eN-Ifa"/>
-                        <segue destination="MA3-hc-X43" kind="show" identifier="signUpToHome" id="gOd-hl-EaA"/>
+                        <segue destination="MA3-hc-X43" kind="show" identifier="signUpToHome" id="JDl-vN-E1K"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Ng-a3-RXe" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -164,10 +164,10 @@
             </objects>
             <point key="canvasLocation" x="-306.39999999999998" y="820.83958020989508"/>
         </scene>
-        <!--View Controller-->
+        <!--Contacts View Controller-->
         <scene sceneID="jVL-8t-hlg">
             <objects>
-                <viewController id="9D2-sn-Qmz" customClass="ViewController" customModule="pigeonpost_app" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="9D2-sn-Qmz" customClass="ContactsViewController" customModule="pigeonpost_app" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="2AM-jw-oAu">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -184,29 +184,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v58-Dm-XJt">
-                                <rect key="frame" x="325" y="20" width="34" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Back"/>
-                                <connections>
-                                    <action selector="contactsBackButton:" destination="9D2-sn-Qmz" eventType="touchUpInside" id="122-xJ-TY7"/>
-                                </connections>
-                            </button>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9pz-ub-1Cg">
-                                <rect key="frame" x="139" y="512" width="97" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XbW-3H-2O4">
-                                <rect key="frame" x="169" y="550" width="36" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Send"/>
-                                <connections>
-                                    <action selector="newContactButton:" destination="9D2-sn-Qmz" eventType="touchUpInside" id="32a-4K-UzG"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Send a contact request:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uvQ-cb-1Do">
                                 <rect key="frame" x="96" y="483" width="183" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -214,12 +191,27 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XyC-62-4yV">
-                                <rect key="frame" x="16" y="20" width="53" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dBN-Dh-Vjh">
+                                <rect key="frame" x="325" y="20" width="34" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Refresh"/>
+                                <state key="normal" title="Back"/>
                                 <connections>
-                                    <action selector="contactsRefresh:" destination="9D2-sn-Qmz" eventType="touchUpInside" id="5zv-nk-3SX"/>
+                                    <action selector="backButton:" destination="9D2-sn-Qmz" eventType="touchUpInside" id="g3M-m1-j0N"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Hdx-Jq-O8I">
+                                <rect key="frame" x="139" y="512" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RID-c5-poM">
+                                <rect key="frame" x="110" y="550" width="154" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Send Contact Request"/>
+                                <connections>
+                                    <action selector="sendRequestButton:" destination="9D2-sn-Qmz" eventType="touchUpInside" id="g8Z-nH-3Ir"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -227,13 +219,13 @@
                         <viewLayoutGuide key="safeArea" id="EFt-EO-2KC"/>
                     </view>
                     <connections>
-                        <outlet property="newContactEmail" destination="9pz-ub-1Cg" id="D9u-rD-xpb"/>
-                        <segue destination="MA3-hc-X43" kind="show" identifier="contactsToHome" id="r5a-pi-hkw"/>
+                        <outlet property="email" destination="Hdx-Jq-O8I" id="gpa-el-7Ra"/>
+                        <segue destination="MA3-hc-X43" kind="show" identifier="contactsToHome" id="smX-z4-3U6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="amj-PV-tw8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="388" y="820"/>
+            <point key="canvasLocation" x="712.79999999999995" y="919.79010494752629"/>
         </scene>
         <!--Deliveries View Controller-->
         <scene sceneID="G3g-6K-c5O">
@@ -280,12 +272,12 @@
                         <viewLayoutGuide key="safeArea" id="JlW-Ub-jkd"/>
                     </view>
                     <connections>
-                        <segue destination="MA3-hc-X43" kind="show" identifier="deliveriesToHome" id="qbP-Va-QYm"/>
+                        <segue destination="MA3-hc-X43" kind="show" identifier="deliveriesToHome" id="3SH-Pr-fxE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zLJ-0i-e2B" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1104.8" y="823.53823088455783"/>
+            <point key="canvasLocation" x="1703" y="920"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="JW1-xG-VvP">
@@ -355,12 +347,16 @@
                         <viewLayoutGuide key="safeArea" id="nI9-lf-zWM"/>
                     </view>
                     <connections>
-                        <segue destination="MA3-hc-X43" kind="showDetail" identifier="settingsToHome" id="2ms-vG-Q4o"/>
+                        <outlet property="updateEmail" destination="xsK-sc-Ag2" id="oFv-sZ-lqH"/>
+                        <outlet property="updateFirstName" destination="d0S-ja-pJn" id="PZ2-f5-pma"/>
+                        <outlet property="updateLastName" destination="mBq-sm-ACE" id="YtN-d5-R0w"/>
+                        <outlet property="updatePassword" destination="UQB-ie-nTA" id="ULC-a5-BAU"/>
+                        <segue destination="MA3-hc-X43" kind="show" identifier="settingsToHome" id="YXE-Cq-Xq9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6eX-rL-0RZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1804" y="819.94002998500753"/>
+            <point key="canvasLocation" x="2633" y="710"/>
         </scene>
         <!--Call Drone View Controller-->
         <scene sceneID="9Wi-Cj-LkG">
@@ -410,30 +406,21 @@
                         <outlet property="map" destination="d9N-GP-LrE" id="9hK-CN-dvM"/>
                         <outlet property="pickerView" destination="jyx-fr-IQX" id="ISC-EQ-erG"/>
                         <outlet property="statusLabel" destination="RWh-LY-iSH" id="ZVq-vL-PXD"/>
-                        <segue destination="MA3-hc-X43" kind="show" identifier="callDroneToHome" id="rmC-5g-gpW"/>
+                        <segue destination="MA3-hc-X43" kind="show" identifier="callDroneToHome" id="V8x-Pz-3Q9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o0d-Wh-fZ2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1525.5999999999999" y="-677.81109445277366"/>
         </scene>
-        <!--View Controller-->
+        <!--Home View Controller-->
         <scene sceneID="O9t-DT-mSU">
             <objects>
-                <viewController id="MA3-hc-X43" customClass="ViewController" customModule="pigeonpost_app" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="MA3-hc-X43" customClass="HomeViewController" customModule="pigeonpost_app" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ABZ-Aq-vAZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3fY-ad-dxa">
-                                <rect key="frame" x="142" y="510" width="91" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="Send Drone"/>
-                                <connections>
-                                    <action selector="sendDroneButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="55t-Zk-Tmv"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Drone Status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P9t-g0-8W7">
                                 <rect key="frame" x="67" y="109" width="85" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -455,15 +442,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aY7-U2-cVp">
-                                <rect key="frame" x="299" y="20" width="60" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Sign Out"/>
-                                <connections>
-                                    <action selector="signOutButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="EMJ-sH-N15"/>
-                                    <action selector="signOutButton:" destination="90r-vN-Iq0" eventType="touchUpInside" id="f94-VM-iP8"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Send to:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wdd-C7-15U">
                                 <rect key="frame" x="67" y="345" width="64" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -476,15 +454,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6B9-I5-Rtd">
-                                <rect key="frame" x="142" y="211" width="80" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <state key="normal" title="Call Drone"/>
-                                <connections>
-                                    <action selector="callDroneButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="sfP-4G-Bwf"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qyd-Ym-SzS">
                                 <rect key="frame" x="293" y="637" width="57" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -492,7 +461,18 @@
                                     <color key="titleColor" white="0.28305593829999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="settingsButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="7Su-q2-FsR"/>
+                                    <action selector="settingsButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="g6S-Ef-fko"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rkk-FD-Z3j">
+                                <rect key="frame" x="154" y="636" width="67" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Deliveries">
+                                    <color key="titleColor" white="0.28305593829999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="deliveriesButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="oz2-Gc-Meu"/>
+                                    <action selector="settingsButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="TE2-Pj-4f4"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F2J-Oj-UJe">
@@ -502,29 +482,43 @@
                                     <color key="titleColor" white="0.28305593826999403" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="contactsButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="Kfe-H2-3d9"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bdL-XI-OA1">
-                                <rect key="frame" x="135" y="608" width="105" height="87"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Deliveries">
-                                    <color key="titleColor" white="0.25894955984533652" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="delvieriesButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="BIc-yc-ezt"/>
+                                    <action selector="contactsButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="Kya-pf-Oa9"/>
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="contact" translatesAutoresizingMaskIntoConstraints="NO" id="9Ig-U3-FjK">
                                 <rect key="frame" x="30" y="603" width="53" height="55"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="box" translatesAutoresizingMaskIntoConstraints="NO" id="aqs-Xi-fkA">
-                                <rect key="frame" x="139" y="560" width="97" height="135"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="settings" translatesAutoresizingMaskIntoConstraints="NO" id="mtE-cP-QRm">
                                 <rect key="frame" x="301" y="611" width="40" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="omX-Y8-toP">
+                                <rect key="frame" x="147" y="510" width="81" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Send Drone"/>
+                                <connections>
+                                    <action selector="sendDroneButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="1Md-Lj-t6l"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oy8-PD-Ejg">
+                                <rect key="frame" x="151" y="201" width="72" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Call Drone"/>
+                                <connections>
+                                    <action selector="callDroneButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="717-IA-419"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rle-pV-ZvP">
+                                <rect key="frame" x="290" y="20" width="60" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Sign Out"/>
+                                <connections>
+                                    <action selector="signOutButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="QQa-b3-nLG"/>
+                                </connections>
+                            </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="box" translatesAutoresizingMaskIntoConstraints="NO" id="aqs-Xi-fkA">
+                                <rect key="frame" x="139" y="556" width="97" height="135"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -532,15 +526,14 @@
                         <viewLayoutGuide key="safeArea" id="hg5-Sh-fCo"/>
                     </view>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="show" identifier="homeToLogin" id="Tbn-UO-bLk"/>
-                        <segue destination="9D2-sn-Qmz" kind="show" identifier="homeToContacts" id="3pt-nl-ScO"/>
-                        <segue destination="MZs-p8-R6b" kind="show" identifier="homeToSettings" id="eAz-dk-rMR"/>
-                        <segue destination="2Hw-pM-foI" kind="show" identifier="homeToCallDrone" id="mEb-dB-ye4"/>
-                        <segue destination="cHC-hW-QMH" kind="show" identifier="homeToDeliveries" id="nIR-yH-Uj7"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="homeToLogin" id="F92-vI-Xu2"/>
+                        <segue destination="2Hw-pM-foI" kind="show" identifier="homeToCallDrone" id="9pc-kH-4vQ"/>
+                        <segue destination="MZs-p8-R6b" kind="show" identifier="homeToSettings" id="g4b-3C-bXV"/>
+                        <segue destination="cHC-hW-QMH" kind="show" identifier="homeToDeliveries" id="IWR-9b-lb1"/>
+                        <segue destination="9D2-sn-Qmz" kind="show" identifier="homeToContacts" id="V8y-5m-PLP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Coe-p7-viW" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="90r-vN-Iq0" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1516" y="31.934032983508249"/>
         </scene>
@@ -552,8 +545,7 @@
         <image name="settings" width="700" height="700"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="nIR-yH-Uj7"/>
-        <segue reference="qbP-Va-QYm"/>
-        <segue reference="Tbn-UO-bLk"/>
+        <segue reference="JDl-vN-E1K"/>
+        <segue reference="vOC-eN-Ifa"/>
     </inferredMetricsTieBreakers>
 </document>
