@@ -240,11 +240,13 @@ class ContactsViewController: UIViewController {
     
     var contacts = [String]()
     @IBOutlet weak var email: UITextField!
+    @IBOutlet weak var contactsTable: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Load existing contacts
+        // TODO: populate loaded contacts into the table contactsTable
         // Currently just doing a get request on /users because idk if we have an endpoint for getting contacts?
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return }
         

@@ -219,6 +219,7 @@
                         <viewLayoutGuide key="safeArea" id="EFt-EO-2KC"/>
                     </view>
                     <connections>
+                        <outlet property="contactsTable" destination="ITe-Zc-yQS" id="nTX-D7-oTI"/>
                         <outlet property="email" destination="Hdx-Jq-O8I" id="gpa-el-7Ra"/>
                         <segue destination="MA3-hc-X43" kind="show" identifier="contactsToHome" id="smX-z4-3U6"/>
                     </connections>
@@ -545,7 +546,7 @@
         <image name="settings" width="700" height="700"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="JDl-vN-E1K"/>
+        <segue reference="smX-z4-3U6"/>
         <segue reference="vOC-eN-Ifa"/>
     </inferredMetricsTieBreakers>
 </document>
