@@ -203,6 +203,9 @@
                                 <rect key="frame" x="169" y="550" width="36" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Send"/>
+                                <connections>
+                                    <action selector="newContactButton:" destination="9D2-sn-Qmz" eventType="touchUpInside" id="32a-4K-UzG"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Send a contact request:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uvQ-cb-1Do">
                                 <rect key="frame" x="96" y="483" width="183" height="21"/>
@@ -224,6 +227,7 @@
                         <viewLayoutGuide key="safeArea" id="EFt-EO-2KC"/>
                     </view>
                     <connections>
+                        <outlet property="newContactEmail" destination="9pz-ub-1Cg" id="D9u-rD-xpb"/>
                         <segue destination="MA3-hc-X43" kind="show" identifier="contactsToHome" id="r5a-pi-hkw"/>
                     </connections>
                 </viewController>
@@ -358,6 +362,61 @@
             </objects>
             <point key="canvasLocation" x="1804" y="819.94002998500753"/>
         </scene>
+        <!--Call Drone View Controller-->
+        <scene sceneID="9Wi-Cj-LkG">
+            <objects>
+                <viewController id="2Hw-pM-foI" customClass="CallDroneViewController" customModule="pigeonpost_app" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="shu-Kk-K8G">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="29R-f7-bFb">
+                                <rect key="frame" x="325" y="20" width="34" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Back"/>
+                                <connections>
+                                    <action selector="backButton:" destination="2Hw-pM-foI" eventType="touchUpInside" id="9hR-NR-UBc"/>
+                                </connections>
+                            </button>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="d9N-GP-LrE">
+                                <rect key="frame" x="16" y="59" width="343" height="369"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </mapView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RWh-LY-iSH">
+                                <rect key="frame" x="16" y="615" width="343" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <pickerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jyx-fr-IQX">
+                                <rect key="frame" x="0.0" y="436" width="375" height="137"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            </pickerView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hDi-1b-Gan">
+                                <rect key="frame" x="151" y="577" width="72" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Call Drone"/>
+                                <connections>
+                                    <action selector="callDroneButton:" destination="2Hw-pM-foI" eventType="touchUpInside" id="G5N-tk-6dD"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="BzE-uE-gMs"/>
+                    </view>
+                    <connections>
+                        <outlet property="callCancel" destination="hDi-1b-Gan" id="JMf-Hj-juc"/>
+                        <outlet property="map" destination="d9N-GP-LrE" id="9hK-CN-dvM"/>
+                        <outlet property="pickerView" destination="jyx-fr-IQX" id="ISC-EQ-erG"/>
+                        <outlet property="statusLabel" destination="RWh-LY-iSH" id="ZVq-vL-PXD"/>
+                        <segue destination="MA3-hc-X43" kind="show" identifier="callDroneToHome" id="rmC-5g-gpW"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="o0d-Wh-fZ2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1525.5999999999999" y="-677.81109445277366"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="O9t-DT-mSU">
             <objects>
@@ -396,9 +455,7 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aY7-U2-cVp">
                                 <rect key="frame" x="299" y="20" width="60" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Sign Out">
-                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
+                                <state key="normal" title="Sign Out"/>
                                 <connections>
                                     <action selector="signOutButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="EMJ-sH-N15"/>
                                     <action selector="signOutButton:" destination="90r-vN-Iq0" eventType="touchUpInside" id="f94-VM-iP8"/>
@@ -421,6 +478,9 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <state key="normal" title="Call Drone"/>
+                                <connections>
+                                    <action selector="callDroneButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="sfP-4G-Bwf"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qyd-Ym-SzS">
                                 <rect key="frame" x="293" y="637" width="57" height="30"/>
@@ -473,6 +533,7 @@
                         <segue destination="cHC-hW-QMH" kind="show" identifier="homeToDeliveries" id="GvD-MM-MPB"/>
                         <segue destination="9D2-sn-Qmz" kind="show" identifier="homeToContacts" id="3pt-nl-ScO"/>
                         <segue destination="MZs-p8-R6b" kind="show" identifier="homeToSettings" id="eAz-dk-rMR"/>
+                        <segue destination="2Hw-pM-foI" kind="show" identifier="homeToCallDrone" id="mEb-dB-ye4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Coe-p7-viW" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -488,7 +549,7 @@
         <image name="settings" width="700" height="700"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Odl-Fe-bF7"/>
+        <segue reference="rmC-5g-gpW"/>
         <segue reference="Tbn-UO-bLk"/>
     </inferredMetricsTieBreakers>
 </document>
