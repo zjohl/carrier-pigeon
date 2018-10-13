@@ -10,9 +10,9 @@ import UIKit
 import DJISDK
 import Foundation
 
+var current_user = ""
+
 class ViewController: UIViewController, DJISDKManagerDelegate {
-    
-    var current_user = ""
     
     // login page
     @IBOutlet weak var password: UITextField!
@@ -293,32 +293,32 @@ class ContactsViewController: UIViewController {
     }
     
     @IBAction func sendRequestButton(_ sender: Any) {
-//        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/contacts?user_email_1=" + current_user + "&user_email_2=" + newContactEmail.text!) else { return }
-//
-//        var statusCode: Int = 0
-//        var request = URLRequest(url: url)
-//        let semaphore = DispatchSemaphore(value: 0)
-//        request.httpMethod = "PUT"
-//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        request.timeoutInterval = 10
-//
-//        let session = URLSession.shared
-//        session.dataTask(with: request) { (data, response, error) in
-//
-//            if let httpResponse = response as? HTTPURLResponse {
-//                print("Status Code: \(httpResponse.statusCode)")
-//                statusCode = httpResponse.statusCode
-//            }
-//            semaphore.signal()
-//
-//            }.resume()
-//        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-//        if statusCode == 204 {
-//            print("Contact added successfully")
-//        }
-//        else {
-//            print("New contact request failed")
-//        }
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/contacts?user_email_1=" + current_user + "&user_email_2=" + email.text!) else { return }
+        print(url)
+        var statusCode: Int = 0
+        var request = URLRequest(url: url)
+        let semaphore = DispatchSemaphore(value: 0)
+        request.httpMethod = "PUT"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 10
+
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Status Code: \(httpResponse.statusCode)")
+                statusCode = httpResponse.statusCode
+            }
+            semaphore.signal()
+
+            }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        if statusCode == 204 {
+            print("Contact added successfully")
+        }
+        else {
+            print("New contact request failed")
+        }
     }
 }
 
