@@ -235,10 +235,10 @@
             </objects>
             <point key="canvasLocation" x="388" y="820"/>
         </scene>
-        <!--View Controller-->
+        <!--Deliveries View Controller-->
         <scene sceneID="G3g-6K-c5O">
             <objects>
-                <viewController id="cHC-hW-QMH" customClass="ViewController" customModule="pigeonpost_app" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="cHC-hW-QMH" customClass="DeliveriesViewController" customModule="pigeonpost_app" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="766-tX-9SJ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -260,14 +260,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iuT-UN-8eW">
-                                <rect key="frame" x="325" y="20" width="34" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Back"/>
-                                <connections>
-                                    <action selector="deliveriesBackButton:" destination="cHC-hW-QMH" eventType="touchUpInside" id="TRq-xT-l3z"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Pending Requests" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8fU-n0-20K">
                                 <rect key="frame" x="118" y="323" width="138" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -275,12 +267,20 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yEP-XC-2Ct">
+                                <rect key="frame" x="325" y="20" width="34" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Back"/>
+                                <connections>
+                                    <action selector="backButton:" destination="cHC-hW-QMH" eventType="touchUpInside" id="ayS-6Z-xgc"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="JlW-Ub-jkd"/>
                     </view>
                     <connections>
-                        <segue destination="MA3-hc-X43" kind="show" identifier="deliveriesToHome" id="0YW-DZ-b6S"/>
+                        <segue destination="MA3-hc-X43" kind="show" identifier="deliveriesToHome" id="qbP-Va-QYm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zLJ-0i-e2B" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -382,8 +382,8 @@
                                 <rect key="frame" x="16" y="59" width="343" height="369"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </mapView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RWh-LY-iSH">
-                                <rect key="frame" x="16" y="615" width="343" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RWh-LY-iSH">
+                                <rect key="frame" x="16" y="601" width="343" height="54"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -394,9 +394,9 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             </pickerView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hDi-1b-Gan">
-                                <rect key="frame" x="151" y="577" width="72" height="30"/>
+                                <rect key="frame" x="159" y="563" width="57" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Call Drone"/>
+                                <state key="normal" title="Request"/>
                                 <connections>
                                     <action selector="callDroneButton:" destination="2Hw-pM-foI" eventType="touchUpInside" id="G5N-tk-6dD"/>
                                 </connections>
@@ -430,6 +430,9 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <state key="normal" title="Send Drone"/>
+                                <connections>
+                                    <action selector="sendDroneButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="55t-Zk-Tmv"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Drone Status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P9t-g0-8W7">
                                 <rect key="frame" x="67" y="109" width="85" height="17"/>
@@ -530,10 +533,10 @@
                     </view>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="homeToLogin" id="Tbn-UO-bLk"/>
-                        <segue destination="cHC-hW-QMH" kind="show" identifier="homeToDeliveries" id="GvD-MM-MPB"/>
                         <segue destination="9D2-sn-Qmz" kind="show" identifier="homeToContacts" id="3pt-nl-ScO"/>
                         <segue destination="MZs-p8-R6b" kind="show" identifier="homeToSettings" id="eAz-dk-rMR"/>
                         <segue destination="2Hw-pM-foI" kind="show" identifier="homeToCallDrone" id="mEb-dB-ye4"/>
+                        <segue destination="cHC-hW-QMH" kind="show" identifier="homeToDeliveries" id="nIR-yH-Uj7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Coe-p7-viW" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -549,7 +552,8 @@
         <image name="settings" width="700" height="700"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="rmC-5g-gpW"/>
+        <segue reference="nIR-yH-Uj7"/>
+        <segue reference="qbP-Va-QYm"/>
         <segue reference="Tbn-UO-bLk"/>
     </inferredMetricsTieBreakers>
 </document>

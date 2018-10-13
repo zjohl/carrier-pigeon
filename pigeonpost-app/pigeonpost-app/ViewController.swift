@@ -192,6 +192,16 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     @IBAction func callDroneButton(_ sender: Any) {
         performSegue(withIdentifier: "homeToCallDrone", sender: sender)
     }
+    @IBAction func sendDroneButton(_ sender: UIButton) {
+        // TODO: Send delivery request to recipient
+        let responseCode = 200
+        if responseCode == 200 {
+            self.showAlertViewWithTitle(title:"Send Drone Request", withMessage: "Your delivery request has been sent! Check Pending Deliveries for updates.")
+        }
+        else {
+            self.showAlertViewWithTitle(title:"Delivery Error", withMessage: "An unexpected error occurred. Please try again later.")
+        }
+    }
     
     // CONTACTS PAGE  *********************************
     var contacts = [String]()
@@ -234,11 +244,6 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
         else {
             print("New contact request failed")
         }
-    }
-    
-    // DELIVERIES PAGE  *********************************
-    @IBAction func deliveriesBackButton(_ sender: Any) {
-        performSegue(withIdentifier: "deliveriesToHome", sender: sender)
     }
     
     // SETTINGS PAGE  *********************************
@@ -341,13 +346,13 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     @IBOutlet weak var callCancel: UIButton!
     @IBAction func callDroneButton(_ sender: Any) {
         
-        if callCancel.currentTitle == "Call Drone" {
+        if callCancel.currentTitle == "Request" {
             //TODO: perform delivery request, check response code.
             
             let responseCode = 200
             if responseCode == 200 {
                 callCancel.setTitle("Cancel", for: .normal)
-                statusLabel.text! = "Confirmed! Drone is on its way."
+                statusLabel.text! = "Confirmed! Drone is on its way to " + waypoints[pickerView.selectedRow(inComponent: 0)]
             } else {
                 statusLabel.text! = "An unexpected error occurred."
             }
@@ -356,13 +361,30 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             let responseCode = 200
             if responseCode == 200 {
-                callCancel.setTitle("Call Drone", for: .normal)
+                callCancel.setTitle("Request", for: .normal)
                 statusLabel.text! = "Drone has been cancelled."
             } else {
                 statusLabel.text! = "An unexpected error occurred."
             }
         }
-        
+    }
+}
+
+class DeliveriesViewController: UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
     }
     
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+    
+    @IBAction func backButton(_ sender: Any) {
+        performSegue(withIdentifier: "deliveriesToHome", sender: sender)
+    }
 }
