@@ -257,7 +257,11 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         
         //TODO: check if there are any summons in progress, if so execute
-        performSegue(withIdentifier: "homeToCallDrone", sender: sender)
+        //if call_in_progress {
+            // go to in progress page, e.g. performSegue(withIdentifier: "homeToCallDrone2", sender: sender)
+        //} else {
+            performSegue(withIdentifier: "homeToCallDrone", sender: sender)
+        //}
     }
     
     @IBAction func sendDroneButton(_ sender: Any) {
