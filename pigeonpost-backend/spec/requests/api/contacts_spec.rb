@@ -8,7 +8,7 @@ RSpec.describe "Contacts", :type => :request do
 
 		post "/api/contacts?user_email_1=#{user1.email}&user_email_2=#{user2.email}"
 
-		expect(response).to have_http_status(:no_content)
+		expect(response).to have_http_status(:created)
 
 		contact1 = UserContact.find_by(user_id: user1.id, contact_id: user2.id)
 		contact2 = UserContact.find_by(user_id: user2.id, contact_id: user1.id)

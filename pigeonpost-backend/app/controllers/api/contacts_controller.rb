@@ -11,10 +11,10 @@ module Api
 	    	raise ActionController::RoutingError.new('Not Found')
 	    end
 
-  	  contact = UserContact.create!(user_id: user1.id, contact_id: user2.id)
+  	  contact = UserContact.find_or_create_by(user_id: user1.id, contact_id: user2.id)
 
-  	  if contact.present?
-  	  	head :no_content
+  	  if contact.valid?
+  	  	head :created
   	  else
   	  	raise ActionController::RoutingError.new('Not Found')
   	  end
@@ -27,13 +27,15 @@ module Api
 	    user2 = User.find_by(email: params[:user_email_2])
 
     	contact = UserContact.find_by(user_id: user1.id, contact_id: user2.id)
-    	UserContact.destroy(contact.id)
 
     	if contact.present?
   	  	head :no_content
   	  else
   	  	raise ActionController::RoutingError.new('Not Found')
-  	  end
-    end
+			end
+
+			UserContact.destroy(contact.id)
+      head :no_content
+		end
   end
 end
