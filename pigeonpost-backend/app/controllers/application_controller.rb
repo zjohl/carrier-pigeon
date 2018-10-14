@@ -7,7 +7,9 @@ class ApplicationController < ActionController::Base
     user = User.find_by(email: params[:email])
 
     if user.present? && user.password == params[:password]
-      head :ok, content_type: "text/html"
+      render partial: "shared/json/user.json", status: :ok, locals: {
+          user: user,
+      }
     else
       raise ActionController::RoutingError.new('Not Found')
     end

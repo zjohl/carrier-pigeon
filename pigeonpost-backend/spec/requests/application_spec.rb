@@ -9,7 +9,15 @@ RSpec.describe "Application", :type => :request do
 
       get "/api/auth", params: {email: user.email, password: user.password}
 
+      expect(response.content_type).to eq("application/json")
       expect(response).to have_http_status(:ok)
+
+      json = JSON.parse(response.body)
+
+      expect(json['id']).to eq(user.id)
+      expect(json['email']).to eq(user.email)
+      expect(json['firstName']).to eq(user.first_name)
+      expect(json['lastName']).to eq(user.last_name)
     end
 
     it "returns 404 if user isn't found" do

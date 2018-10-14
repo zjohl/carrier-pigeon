@@ -30,7 +30,6 @@ RSpec.describe "Users", :type => :request do
 
     expect(json['id']).to eq(user.id)
     expect(json['email']).to eq(user.email)
-    expect(json['password']).to eq(user.password)
     expect(json['firstName']).to eq(user.first_name)
     expect(json['lastName']).to eq(user.last_name)
   end
