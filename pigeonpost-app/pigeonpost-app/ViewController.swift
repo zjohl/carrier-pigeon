@@ -275,10 +275,7 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
         }
     }
     
-    @IBAction func settingsButton(_ sender: Any) {
-        performSegue(withIdentifier: "homeToSettings", sender: sender)
-    }
-    
+
     @IBAction func deliveriesButton(_ sender: Any) {
         performSegue(withIdentifier: "homeToDeliveries", sender: sender)
     }
