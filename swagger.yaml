@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
   title: "Pigeon Post"
   description: "This is the API specification for [Pigeon Post](https://github.com/zjohl/carrier-pigeon)! Very much a work in progress."
@@ -211,17 +211,13 @@ paths:
     get:
       tags:
       - "delivery"
-      summary: "Get past deliveries for a user"
+      summary: "Get delivery by id"
       parameters:
-      - name: "userId"
+      - name: "id"
         in: "query"
         schema:
           type: integer
         required: true
-      - name: "limit"
-        in: "query"
-        schema:
-          type: "integer"
       responses:
         200:
           description: "successful operation"
@@ -239,7 +235,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Route"
+              $ref: "#/components/schemas/Delivery"
       responses:
         200:
           description: "successful operation"
