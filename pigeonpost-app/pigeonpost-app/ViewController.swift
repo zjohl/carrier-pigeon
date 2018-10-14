@@ -11,8 +11,9 @@ import DJISDK
 import Foundation
 
 var current_user = ""
+var current_user_id = 0
 
-class ViewController: UIViewController, DJISDKManagerDelegate {
+class ViewController: UIViewController {
     
     // login page
     @IBOutlet weak var password: UITextField!
@@ -35,47 +36,14 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-    
-    // The following code up to TEXT FIELDS section is referenced from DJI's ImportSDKDemo project:
-    // https://github.com/DJI-Mobile-SDK-Tutorials/iOS-ImportAndActivateSDKInXcode-Swift
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        DJISDKManager.registerApp(with: self)
-        //let connect_result = DJISDKManager.startConnectionToProduct()
-        //print("Connection:")
-        //print(connect_result)
-        //let product_result = DJISDKManager.product()
-        //print("Product:")
-        //print(product_result ?? "none")
-    }
-    
-    func showAlertViewWithTitle(title: String, withMessage message: String) {
-        
-        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        let okAction = UIAlertAction.init(title:"OK", style: UIAlertActionStyle.default, handler: nil)
-        alert.addAction(okAction)
-        self.present(alert, animated: true, completion: nil)
-        
-    }
-    
-    func appRegisteredWithError(_ error: Error?) {
-        var message = "Register App Successed!"
-        if (error != nil) {
-            message = "Register app failed! Please enter your app key and check the network."
-        } else{
-            print(message);
-        }
-        
-        // testing
-        //self.showAlertViewWithTitle(title:"Register App", withMessage: message)
     }
 
     // LOGIN PAGE  *********************************
@@ -95,6 +63,7 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
             if let httpResponse = response as? HTTPURLResponse {
                 print("Status Code: \(httpResponse.statusCode)")
                 statusCode = httpResponse.statusCode
+                print(httpResponse)
             }
             semaphore.signal()
             
@@ -132,8 +101,6 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
          print("Password must be greater than 3 characters.")
          newUsrErr.text = "Password must be greater than 3 characters."
          } else {
-         
-         
         
         let dict = ["email":email.text!, "first_name": fname.text!, "last_name": lname.text!,"password":newPswd.text! ] as [String : Any]
         
@@ -165,32 +132,90 @@ class ViewController: UIViewController, DJISDKManagerDelegate {
                 }catch { print(error) }
             }
             }.resume()
-            
-            performSegue(withIdentifier: "signUpToHome", sender: sender)
+            self.showAlertViewWithTitle(title:"Account Created!", withMessage: "Your account has been created. Please go back to login for the first time.")
             
         }
     }
     
-    // SETTINGS PAGE  *********************************
-    @IBAction func settingsBckButton(_ sender: Any) {
-        performSegue(withIdentifier: "settingsToHome", sender: sender)
+    func showAlertViewWithTitle(title: String, withMessage message: String) {
+        
+        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction.init(title:"OK", style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+        
     }
+    
 }
 
 
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, DJISDKManagerDelegate {
+    
+    @IBOutlet weak var batteryLabel: UILabel!
+    @IBOutlet weak var bindingStateLabel: UILabel!
+    //var aircraftBindingState: DJIAppActivationAircraftBindingState
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        DJISDKManager.registerApp(with: self)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    // UpdateUI function for DJI state
+    // https://developer.dji.com/mobile-sdk/documentation/ios-tutorials/ActivationAndBinding.html
+    func updateUI() {
+//        switch (self.aircraftBindingState) {
+//        case DJIAppActivationAircraftBindingStateUnboundButCannotSync:
+//            self.bindingStateLabel.text = @"Unbound. Please connect Internet to update state. ";
+//            break;
+//        case DJIAppActivationAircraftBindingStateUnbound:
+//            self.bindingStateLabel.text = @"Unbound. Use DJI GO to bind the aircraft. ";
+//            break;
+//        case DJIAppActivationAircraftBindingStateUnknown:
+//            self.bindingStateLabel.text = @"Unknown";
+//            break;
+//        case DJIAppActivationAircraftBindingStateBound:
+//            self.bindingStateLabel.text = @"Bound";
+//            break;
+//        case DJIAppActivationAircraftBindingStateInitial:
+//            self.bindingStateLabel.text = @"Initial";
+//            break;
+//        case DJIAppActivationAircraftBindingStateNotRequired:
+//            self.bindingStateLabel.text = @"Binding is not required. ";
+//            break;
+//        case DJIAppActivationAircraftBindingStateNotSupported:
+//            self.bindingStateLabel.text = @"App Activation is not supported. ";
+
+    }
+    
+    // DJISDKManagerDelegate Methods
+    func productConnected(_ product: DJIBaseProduct?) {
+        NSLog("Product Connected")
+    }
+    func productDisconnected() {
+        NSLog("Product Disconnected")
+    }
+    
+    func appRegisteredWithError(_ error: Error?) {
+        
+        var message = "Register App Succeeded!"
+        if (error != nil) {
+            message = "Register app failed! Please enter your app key and check the network."
+        }else{
+            NSLog(message);
+        }
+        
+        //self.showAlertViewWithTitle(title:"Register App", withMessage: message)
     }
     
     @IBAction func signOutButton(_ sender: Any) {
@@ -241,43 +266,31 @@ class ContactsViewController: UIViewController {
     var contacts = [String]()
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var contactsTable: UITableView!
+    @IBOutlet weak var confirmationLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Load existing contacts
-        // TODO: populate loaded contacts into the table contactsTable
-        // Currently just doing a get request on /users because idk if we have an endpoint for getting contacts?
+        let semaphore = DispatchSemaphore(value: 0)
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return }
         
-        let names = [String]()
-        let semaphore = DispatchSemaphore(value: 0)
         let session = URLSession.shared
-        session.dataTask(with: url) { (data, response, error) in
-            do {
-                let parsedData = try JSONSerialization.jsonObject(with: data!, options: []) as! [String:Any]
-                print(parsedData)
-                if let users = parsedData["users"] as? [String:Any] {
-                    users.forEach { user in
-                        //names.append(user["email"])
-                    }
+        session.dataTask(with: url) { (users, response, error) in
+            
+            if let users = users {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: users, options: [])
+                    print("JSON:")
+                    print(json)
+                    print(type(of: json))
+                } catch {
+                    print(error)
                 }
-                
-            } catch  {
-                print(error)
             }
-            //            if let users = users {
-            //                print(users)
-            //                do {
-            //                    let json = try JSONSerialization.jsonObject(with: users, options: [])
-            //                    print(json)
-            //                } catch {
-            //                    print(error)
-            //                }
-            //            }
-            semaphore.signal()
-            }.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        semaphore.signal()
+        }.resume()
+    
+    _ = semaphore.wait(timeout: DispatchTime.distantFuture)
     }
     
     override func didReceiveMemoryWarning() {
@@ -293,13 +306,22 @@ class ContactsViewController: UIViewController {
     }
     
     @IBAction func sendRequestButton(_ sender: Any) {
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/contacts?user_email_1=" + current_user + "&user_email_2=" + email.text!) else { return }
-        print(url)
+        
+        let dict = ["user_email_1":current_user, "user_email_2": email.text!] as [String : Any]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
+            return
+        }
+        
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/contacts") else { return }
+        
         var statusCode: Int = 0
         var request = URLRequest(url: url)
         let semaphore = DispatchSemaphore(value: 0)
-        request.httpMethod = "PUT"
+        
+        request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData as Data
         request.timeoutInterval = 10
 
         let session = URLSession.shared
@@ -313,10 +335,13 @@ class ContactsViewController: UIViewController {
 
             }.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        if statusCode == 204 {
+        if statusCode == 204 || statusCode == 201 || statusCode == 200 {
+            email.text! = ""
+            confirmationLabel.text! = "Contact added!"
             print("Contact added successfully")
         }
         else {
+            confirmationLabel.text! = "Unable to add contact. Please try again later."
             print("New contact request failed")
         }
     }
