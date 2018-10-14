@@ -10,8 +10,10 @@ import UIKit
 import DJISDK
 import Foundation
 
-var current_user = ""
+var current_user_email = ""
 var current_user_id = 0
+var current_user_fname = ""
+var current_user_lname = ""
 
 class ViewController: UIViewController {
     
@@ -71,7 +73,7 @@ class ViewController: UIViewController {
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         if statusCode == 200 {
             print("Login success")
-            current_user = username.text!
+            current_user_email = username.text!
             self.performSegue(withIdentifier: "loginToHome", sender: sender)
         }
         else {
@@ -223,6 +225,38 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
     }
     
     @IBAction func callDroneButton(_ sender: Any) {
+        // check if summoning is already in progress
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 10
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            
+            if let response = response {
+                print("JSON Response: \(response)")
+            }
+            
+            if let data = data {
+                print("Data: \(data)")
+                    do {
+                        let parseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
+                
+                        let meta = parseJSON!["meta"] as? [String:Any]
+                        print("Meta: \(meta)")
+                
+                    } catch { print(error) }
+            }
+            semaphore.signal()
+            }.resume()
+        
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        
+        //TODO: check if there are any summons in progress, if so execute
         performSegue(withIdentifier: "homeToCallDrone", sender: sender)
     }
     
@@ -307,7 +341,7 @@ class ContactsViewController: UIViewController {
     
     @IBAction func sendRequestButton(_ sender: Any) {
         
-        let dict = ["user_email_1":current_user, "user_email_2": email.text!] as [String : Any]
+        let dict = ["user_email_1":current_user_email, "user_email_2": email.text!] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
             return
@@ -408,15 +442,66 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     @IBAction func callDroneButton(_ sender: Any) {
         
         if callCancel.currentTitle == "Request" {
-            //TODO: perform delivery request, check response code.
+            //TODO: perform delivery request, check response code
+            var lat = 0.0
+            var long = 0.0
+            if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 1" {
+                lat = 42.339932
+                long = -71.098401
+            } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 2" {
+                lat = 42.341305
+                long = -71.096638
+            } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 3" {
+                lat = 42.340646
+                long = -71.097516
+            }
             
-            let responseCode = 200
+            let dict = ["destination": ["latitude":lat, "longitude":long], "sender": ["firstName": current_user_fname, "lastName": current_user_lname, "id": current_user_id], "receiver": ["firstName": current_user_fname, "lastName": current_user_lname, "id": current_user_id]] as [String : Any]
+            
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
+                return
+            }
+            
+            guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = jsonData as Data
+            request.timeoutInterval = 10
+            var responseCode: Int
+            let semaphore = DispatchSemaphore(value: 0)
+
+            let session = URLSession.shared
+            session.dataTask(with: request) { (data, response, error) in
+                
+                if let response = response {
+                    print("JSON Response: \(response)")
+                }
+                
+                if let data = data {
+                    print("Data: \(data)")
+//                    do {
+//                        let parseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
+//
+//                        let meta = parseJSON!["meta"] as? [String:Any]
+//
+//                    }catch { print(error) }
+                }
+                semaphore.signal()
+                }.resume()
+            
+            _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+            
+            responseCode = 200 //for testing, should be removed once we get actual response
+            
             if responseCode == 200 {
                 callCancel.setTitle("Cancel", for: .normal)
                 statusLabel.text! = "Confirmed! Drone is on its way to " + waypoints[pickerView.selectedRow(inComponent: 0)]
             } else {
                 statusLabel.text! = "An unexpected error occurred."
             }
+            
         } else {
             //TODO: cancel request
             
