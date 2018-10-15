@@ -12,6 +12,19 @@ import Foundation
 
 var currentUser = user(firstName: "", lastName: "", id: 0, email: "", password: "")
 
+//STRUCTS: based off yaml
+struct drone: Decodable {
+    let id: Int
+    let position: coordinates
+    let batterPercent: Int
+    let inFlight: String
+}
+
+struct coordinates: Decodable {
+    let latitude: Float
+    let longitude: Float
+}
+
 struct user: Decodable {
     let firstName: String
     let lastName: String
@@ -23,6 +36,36 @@ struct user: Decodable {
 struct users_response: Decodable {
     let users: [user]
 }
+
+struct userWithContacts: Decodable {
+    let firstName: String
+    let lastName: String
+    let id: Int
+    let email: String
+    let password: String
+    let contacts: [contact]
+}
+
+struct contact: Decodable {
+    let firstName: String
+    let lastName: String
+    let id: Int
+}
+
+struct delivery: Decodable {
+    let id: Int
+    let droneId: Int
+    let status: String
+    let createdAt: Int
+    let updatedAt: Int
+    let origin: coordinates
+    let destination: coordinates
+    let sender: contact
+    let receiver: contact
+}
+
+//VIEW CONTROLLERS
+
 
 class ViewController: UIViewController {
     
@@ -90,7 +133,7 @@ class ViewController: UIViewController {
         }
         else {
             print("Login Failed")
-            self.errMsg.text = "Invalid login credentials."
+            self.errMsg.text = "Login failed. Please try again."
         }
     }
     
@@ -157,9 +200,7 @@ class ViewController: UIViewController {
         let okAction = UIAlertAction.init(title:"OK", style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
-        
     }
-    
 }
 
 
