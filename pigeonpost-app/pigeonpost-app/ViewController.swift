@@ -10,10 +10,19 @@ import UIKit
 import DJISDK
 import Foundation
 
-var current_user_email = ""
-var current_user_id = 0
-var current_user_fname = ""
-var current_user_lname = ""
+var currentUser = user(firstName: "", lastName: "", id: 0, email: "", password: "")
+
+struct user: Decodable {
+    let firstName: String
+    let lastName: String
+    let id: Int
+    let email: String
+    let password: String
+}
+
+struct users_response: Decodable {
+    let users: [user]
+}
 
 class ViewController: UIViewController {
     
@@ -52,7 +61,7 @@ class ViewController: UIViewController {
     @IBAction func loginButton(_ sender: Any) {
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/auth?email=" + username.text! + "&password=" + password.text!) else { return }
         
-        var statusCode: Int = 0
+        var success: Bool = false
         var request = URLRequest(url: url)
         let semaphore = DispatchSemaphore(value: 0)
         request.httpMethod = "GET"
@@ -62,18 +71,21 @@ class ViewController: UIViewController {
         let session = URLSession.shared
         session.dataTask(with: request) { (data, response, error) in
             
-            if let httpResponse = response as? HTTPURLResponse {
-                print("Status Code: \(httpResponse.statusCode)")
-                statusCode = httpResponse.statusCode
-                print(httpResponse)
+            guard let data = data else { return }
+            do {
+                currentUser = try JSONDecoder().decode(user.self, from: data)
+                success = true
+            
+            } catch {
+                print(error)
             }
             semaphore.signal()
             
         }.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        if statusCode == 200 {
-            print("Login success")
-            current_user_email = username.text!
+        
+        if success {
+            print("Login success! Logging in user \(currentUser.email) {id=\(currentUser.id)}" )
             self.performSegue(withIdentifier: "loginToHome", sender: sender)
         }
         else {
@@ -294,18 +306,6 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
     }
 }
 
-struct user: Decodable {
-    let firstName: String
-    let lastName: String
-    let id: Int
-    let email: String
-    let password: String
-}
-
-struct users_response: Decodable {
-    let users: [user]
-}
-
 // CONTACTS PAGE
 class ContactsViewController: UIViewController {
     
@@ -359,7 +359,7 @@ class ContactsViewController: UIViewController {
     
     @IBAction func sendRequestButton(_ sender: Any) {
         
-        let dict = ["user_email_1":current_user_email, "user_email_2": email.text!] as [String : Any]
+        let dict = ["user_email_1":currentUser.email, "user_email_2": email.text!] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
             return
@@ -474,7 +474,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 long = -71.097516
             }
             
-            let dict = ["destination": ["latitude":lat, "longitude":long], "sender": ["firstName": current_user_fname, "lastName": current_user_lname, "id": current_user_id], "receiver": ["firstName": current_user_fname, "lastName": current_user_lname, "id": current_user_id]] as [String : Any]
+            let dict = ["destination": ["latitude":lat, "longitude":long], "sender": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id], "receiver": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id]] as [String : Any]
             
             guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
                 return

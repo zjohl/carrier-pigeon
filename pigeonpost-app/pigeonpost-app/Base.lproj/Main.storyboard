@@ -458,7 +458,6 @@
         <image name="icon 3" width="2550" height="3300"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="IWR-9b-lb1"/>
         <segue reference="3SH-Pr-fxE"/>
         <segue reference="vOC-eN-Ifa"/>
     </inferredMetricsTieBreakers>
