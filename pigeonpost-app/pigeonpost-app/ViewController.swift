@@ -294,11 +294,23 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
     }
 }
 
+struct user: Decodable {
+    let firstName: String
+    let lastName: String
+    let id: Int
+    let email: String
+    let password: String
+}
+
+struct users_response: Decodable {
+    let users: [user]
+}
 
 // CONTACTS PAGE
 class ContactsViewController: UIViewController {
     
-    var contacts = [String]()
+    var contactNames = [String]()
+    var contacts = [user]()
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var contactsTable: UITableView!
     @IBOutlet weak var confirmationLabel: UILabel!
@@ -310,22 +322,27 @@ class ContactsViewController: UIViewController {
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return }
         
         let session = URLSession.shared
-        session.dataTask(with: url) { (users, response, error) in
+        session.dataTask(with: url) { (data, response, error) in
             
-            if let users = users {
-                do {
-                    let json = try JSONSerialization.jsonObject(with: users, options: [])
-                    print("JSON:")
-                    print(json)
-                    print(type(of: json))
-                } catch {
-                    print(error)
-                }
+            guard let data = data else { return }
+            do {
+                let result = try JSONDecoder().decode(users_response.self, from: data)
+                self.contacts = result.users
+                
+            } catch {
+                print(error)
             }
-        semaphore.signal()
-        }.resume()
-    
-    _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+            
+            semaphore.signal()
+            }.resume()
+        
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        
+        for contact in contacts {
+            print(contact.firstName + " " + contact.lastName)
+            contactNames.append(contact.firstName + " " + contact.lastName)
+        }
+        
     }
     
     override func didReceiveMemoryWarning() {
