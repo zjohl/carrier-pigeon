@@ -14,54 +14,58 @@ var currentUser = user(firstName: "", lastName: "", id: 0, email: "", password: 
 
 //STRUCTS: based off yaml
 struct drone: Decodable {
-    let id: Int
-    let position: coordinates
-    let batterPercent: Int
-    let inFlight: String
+    var id: Int
+    var position: coordinates
+    var batterPercent: Int
+    var inFlight: String
 }
 
 struct coordinates: Decodable {
-    let latitude: Float
-    let longitude: Float
+    var latitude: Float
+    var longitude: Float
 }
 
 struct user: Decodable {
-    let firstName: String
-    let lastName: String
-    let id: Int
-    let email: String
-    let password: String
+    var firstName: String
+    var lastName: String
+    var id: Int
+    var email: String
+    var password: String
 }
 
 struct users_response: Decodable {
-    let users: [user]
+    var users: [user]
 }
 
 struct userWithContacts: Decodable {
-    let firstName: String
-    let lastName: String
-    let id: Int
-    let email: String
-    let password: String
-    let contacts: [contact]
+    var firstName: String
+    var lastName: String
+    var id: Int
+    var email: String
+    var password: String
+    var contacts: [contact]
 }
 
 struct contact: Decodable {
-    let firstName: String
-    let lastName: String
-    let id: Int
+    var firstName: String
+    var lastName: String
+    var id: Int
 }
 
 struct delivery: Decodable {
-    let id: Int
-    let droneId: Int
-    let status: String
-    let createdAt: Int
-    let updatedAt: Int
-    let origin: coordinates
-    let destination: coordinates
-    let sender: contact
-    let receiver: contact
+    var id: Int
+    var droneId: Int
+    var origin: coordinates
+    var destination: coordinates
+    var status: String
+    var sender: contact
+    var receiver: contact
+    var createdDate: Int
+    var updatedDate: Int
+}
+
+struct deliveries_response: Decodable {
+    var deliveries: [delivery]
 }
 
 //VIEW CONTROLLERS
@@ -358,7 +362,9 @@ class ContactsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         let semaphore = DispatchSemaphore(value: 0)
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return }
         
@@ -383,7 +389,6 @@ class ContactsViewController: UIViewController {
             print(contact.firstName + " " + contact.lastName)
             contactNames.append(contact.firstName + " " + contact.lastName)
         }
-        
     }
     
     override func didReceiveMemoryWarning() {
@@ -467,6 +472,9 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         pickerView.delegate = self
         pickerView.dataSource = self
         waypoint1.coordinate = CLLocationCoordinate2D(latitude: 42.339932, longitude: -71.098401)
@@ -502,8 +510,10 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         if callCancel.currentTitle == "Request" {
             //TODO: perform delivery request, check response code
-            var lat = 0.0
-            var long = 0.0
+            
+            var lat: Float = 0
+            var long: Float = 0
+            
             if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 1" {
                 lat = 42.339932
                 long = -71.098401
@@ -515,7 +525,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 long = -71.097516
             }
             
-            let dict = ["destination": ["latitude":lat, "longitude":long], "sender": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id], "receiver": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id]] as [String : Any]
+            var dict = ["id": 0, "droneId": 0, "status": "in progress", "createdDate": 0, "updatedDate": 0, "origin": ["latitude": 0, "longitude": 0], "destination": ["latitude": lat, "longitude": long], "sender": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id], "receiver": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id]] as [String : Any]
             
             guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
                 return
@@ -578,8 +588,88 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
 
 // DELIVERIES PAGE
 class DeliveriesViewController: UIViewController {
+    
+    var unfiltered_deliveries: [delivery] = [] // all deliveries retruned from initial get request
+    
+    var deliveries: [delivery] = []         // filtered deliveries - for the delivery tracker table
+    var deliveries_display: [String] = []   // what gets displayed for the delivery in the table view
+    
+    var requests: [delivery] = []           // filtered deliveries - for the pending delivery requests table
+    var request_display: [String] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries?userId=" + String(currentUser.id)) else { return }
+        
+        var request = URLRequest(url: url)
+        let semaphore = DispatchSemaphore(value: 0)
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 10
+        
+        let session = URLSession.shared
+        session.dataTask(with: url) { (data, response, error) in
+            
+            guard let data = data else { return }
+            do {
+                let result = try JSONDecoder().decode(deliveries_response.self, from: data)
+                self.unfiltered_deliveries = result.deliveries
+                
+            } catch {
+                print(error)
+            }
+            
+            semaphore.signal()
+            }.resume()
+        
+        // split between Pending Requests and Delivery Tracker (history)
+        /* delivery status is assumed to be one of:
+            - Pending
+            - In Progress
+            - Cancelled
+            - Complete
+         */
+        for delivery in unfiltered_deliveries {
+            
+            if delivery.status == "Pending" {
+                requests.append(delivery)
+                if delivery.sender.id == currentUser.id {
+                    request_display.append("To: " + delivery.receiver.firstName)
+                } else {
+                    request_display.append("From: " + delivery.sender.firstName)
+                }
+            }
+            else {
+                
+                if delivery.sender.id == delivery.receiver.id && delivery.status != "In Progress" { // completed or cancelled summon, we dont want to display it
+                    continue
+                
+                } else {
+                    
+                    deliveries.append(delivery)
+                    
+                    if delivery.sender.id == delivery.receiver.id { // incomplete summon
+                        deliveries_display.append("Drone request in progress")
+                    } else {
+                        
+                        if delivery.sender.id == currentUser.id {
+                            deliveries_display.append("To: " + delivery.receiver.firstName + " | Status: " + delivery.status)
+                        } else {
+                            deliveries_display.append("From: " + delivery.sender.firstName + " | Status: " + delivery.status)
+                        }
+                    }
+                    
+                }
+            }
+        }
+        
+        print("Deliver Tracker table data: \(deliveries)")
+        print("Deliver Tracker table labels: \(deliveries_display)") // Array to get displayed in Display Tracker
+        print("Pending Requests table data: \(requests)")
+        print("Pending Requests table labels: \(request_display)") // Array to get displayed in Pending Requests
     }
     
     override func didReceiveMemoryWarning() {
