@@ -449,6 +449,7 @@ class ContactsViewController: UIViewController {
             email.text! = ""
             confirmationLabel.text! = "Contact added!"
             print("Contact added successfully")
+            viewWillAppear(true)
         }
         else {
             confirmationLabel.text! = "Unable to add contact. Please try again later."
@@ -691,6 +692,11 @@ class DeliveriesViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+    }
+    
+    
+    @IBAction func refreshButton(_ sender: Any) {
+        viewWillAppear(true)
     }
     
     @IBAction func backButton(_ sender: Any) {
