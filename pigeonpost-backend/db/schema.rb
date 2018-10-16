@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_23_192027) do
+ActiveRecord::Schema.define(version: 2018_10_16_150158) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "deliveries", force: :cascade do |t|
     t.integer "drone_id"
-    t.string "status"
     t.float "origin_longitude"
     t.float "origin_latitude"
     t.float "destination_longitude"
@@ -26,6 +25,7 @@ ActiveRecord::Schema.define(version: 2018_09_23_192027) do
     t.integer "receiver_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
   end
 
   create_table "drones", force: :cascade do |t|

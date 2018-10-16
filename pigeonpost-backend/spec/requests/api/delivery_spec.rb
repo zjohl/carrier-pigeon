@@ -3,7 +3,9 @@ require "rails_helper"
 RSpec.describe "Deliveries", :type => :request do
 
     it "can list all deliveries" do
-        deliveries = FactoryBot.create_list(:delivery, 2)
+        sender = FactoryBot.create(:user)
+        receiver = FactoryBot.create(:user)
+        deliveries = FactoryBot.create_list(:delivery, 2, sender_id: sender.id, receiver_id: receiver.id)
 
         get "/api/deliveries"
 
@@ -19,7 +21,9 @@ RSpec.describe "Deliveries", :type => :request do
     end
 
     it "can get a single delivery" do
-        delivery = FactoryBot.create(:delivery)
+        sender = FactoryBot.create(:user)
+        receiver = FactoryBot.create(:user)
+        delivery = FactoryBot.create(:delivery, sender_id: sender.id, receiver_id: receiver.id)
 
         get "/api/deliveries/#{delivery.id}"
 
@@ -39,7 +43,7 @@ RSpec.describe "Deliveries", :type => :request do
 
         post "/api/deliveries", params: {
             drone_id: 1,
-            status: "great",
+            status: "pending",
             origin: {
                 latitude: 2,
                 longitude: 3

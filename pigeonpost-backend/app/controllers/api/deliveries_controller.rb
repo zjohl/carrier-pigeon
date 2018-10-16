@@ -4,18 +4,21 @@ module Api
 
     def index
       render partial: "shared/json/deliveries.json", locals: {
-          deliveries: Delivery.all,
+          deliveries: Delivery.includes(:sender, :receiver).all,
       }
     end
 
     def show
+      delivery = Delivery.includes(:sender, :receiver).find(params[:id])
       render partial: "shared/json/delivery.json", locals: {
-          delivery: Delivery.find(params[:id]),
+          delivery: delivery,
+          sender: delivery.sender,
+          receiver: delivery.receiver
       }
     end
 
     def create
-      params.permit(:drone_id, :status, :destination, :sender_id, :receiver_id, origin: [:latitude, :longitude])
+      params.permit(:drone_id, :status, :origin, :destination, :sender_id, :receiver_id)
       delivery = Delivery.create!(drone_id: params[:drone_id],
                                   status: params[:status],
                                   origin_latitude: params[:origin][:latitude],
