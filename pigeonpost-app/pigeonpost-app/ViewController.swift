@@ -10,7 +10,7 @@ import UIKit
 import DJISDK
 import Foundation
 
-var currentUser = user(firstName: "", lastName: "", id: 0, email: "", password: "")
+var currentUser = user(firstName: "", lastName: "", email: "", id: 0, password: "")
 
 //STRUCTS: based off yaml
 struct drone: Decodable {
@@ -28,9 +28,18 @@ struct coordinates: Decodable {
 struct user: Decodable {
     var firstName: String
     var lastName: String
-    var id: Int
     var email: String
+    var id: Int
     var password: String
+}
+
+struct user_with_contacts: Decodable {
+    var id: Int
+    var firstName: String
+    var lastName: String
+    var email: String
+    var createdDate: String
+    var contacts: [contact]
 }
 
 struct users_response: Decodable {
@@ -355,7 +364,7 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
 class ContactsViewController: UIViewController {
     
     var contactNames = [String]()
-    var contacts = [user]()
+    var contacts = [contact]()
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var contactsTable: UITableView!
     @IBOutlet weak var confirmationLabel: UILabel!
@@ -365,16 +374,19 @@ class ContactsViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
+        
         let semaphore = DispatchSemaphore(value: 0)
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users") else { return }
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users/" + String(currentUser.id)) else { return }
         
         let session = URLSession.shared
         session.dataTask(with: url) { (data, response, error) in
             
             guard let data = data else { return }
             do {
-                let result = try JSONDecoder().decode(users_response.self, from: data)
-                self.contacts = result.users
+                let result = try JSONDecoder().decode(user_with_contacts.self, from: data)
+                print("Result: \(result)")
+                self.contacts = result.contacts
                 
             } catch {
                 print(error)
