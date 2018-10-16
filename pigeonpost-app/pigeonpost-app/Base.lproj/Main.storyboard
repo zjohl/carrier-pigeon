@@ -189,6 +189,20 @@
                                 <rect key="frame" x="67" y="103" width="240" height="330"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="p5E-1b-yCG">
+                                        <rect key="frame" x="0.0" y="28" width="240" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="p5E-1b-yCG" id="XFt-Rv-Rly">
+                                            <rect key="frame" x="0.0" y="0.0" width="240" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="9D2-sn-Qmz" id="ncZ-MM-6Wb"/>
+                                    <outlet property="delegate" destination="9D2-sn-Qmz" id="aEl-X5-urE"/>
+                                </connections>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Send a contact request:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uvQ-cb-1Do">
                                 <rect key="frame" x="96" y="483" width="183" height="21"/>
@@ -466,8 +480,7 @@
         <image name="icon 3" width="2550" height="3300"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="IWR-9b-lb1"/>
-        <segue reference="3SH-Pr-fxE"/>
+        <segue reference="smX-z4-3U6"/>
         <segue reference="F92-vI-Xu2"/>
     </inferredMetricsTieBreakers>
 </document>
