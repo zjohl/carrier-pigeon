@@ -402,13 +402,6 @@
                                     <action selector="signOutButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="QQa-b3-nLG"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iqW-UL-tfC">
-                                <rect key="frame" x="16" y="108" width="343" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="FNk-dF-vk0">
                                 <rect key="frame" x="67" y="340" width="240" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -462,7 +455,6 @@
                         <viewLayoutGuide key="safeArea" id="hg5-Sh-fCo"/>
                     </view>
                     <connections>
-                        <outlet property="bindingStateLabel" destination="iqW-UL-tfC" id="Zuo-FG-ODw"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="homeToLogin" id="F92-vI-Xu2"/>
                         <segue destination="2Hw-pM-foI" kind="show" identifier="homeToCallDrone" id="9pc-kH-4vQ"/>
                         <segue destination="cHC-hW-QMH" kind="show" identifier="homeToDeliveries" id="IWR-9b-lb1"/>
@@ -480,6 +472,7 @@
         <image name="icon 3" width="2550" height="3300"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="V8y-5m-PLP"/>
         <segue reference="smX-z4-3U6"/>
         <segue reference="F92-vI-Xu2"/>
     </inferredMetricsTieBreakers>

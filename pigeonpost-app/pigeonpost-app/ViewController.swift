@@ -221,8 +221,6 @@ class ViewController: UIViewController {
 class HomeViewController: UIViewController, DJISDKManagerDelegate {
     
     @IBOutlet weak var batteryLabel: UILabel!
-    @IBOutlet weak var bindingStateLabel: UILabel!
-    //var aircraftBindingState: DJIAppActivationAircraftBindingState
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -236,34 +234,6 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    // UpdateUI function for DJI state
-    // https://developer.dji.com/mobile-sdk/documentation/ios-tutorials/ActivationAndBinding.html
-    func updateUI() {
-//        switch (self.aircraftBindingState) {
-//        case DJIAppActivationAircraftBindingStateUnboundButCannotSync:
-//            self.bindingStateLabel.text = @"Unbound. Please connect Internet to update state. ";
-//            break;
-//        case DJIAppActivationAircraftBindingStateUnbound:
-//            self.bindingStateLabel.text = @"Unbound. Use DJI GO to bind the aircraft. ";
-//            break;
-//        case DJIAppActivationAircraftBindingStateUnknown:
-//            self.bindingStateLabel.text = @"Unknown";
-//            break;
-//        case DJIAppActivationAircraftBindingStateBound:
-//            self.bindingStateLabel.text = @"Bound";
-//            break;
-//        case DJIAppActivationAircraftBindingStateInitial:
-//            self.bindingStateLabel.text = @"Initial";
-//            break;
-//        case DJIAppActivationAircraftBindingStateNotRequired:
-//            self.bindingStateLabel.text = @"Binding is not required. ";
-//            break;
-//        case DJIAppActivationAircraftBindingStateNotSupported:
-//            self.bindingStateLabel.text = @"App Activation is not supported. ";
-
     }
     
     // DJISDKManagerDelegate Methods
@@ -282,8 +252,6 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
         }else{
             NSLog(message);
         }
-        
-        //self.showAlertViewWithTitle(title:"Register App", withMessage: message)
     }
     
     @IBAction func signOutButton(_ sender: Any) {
