@@ -365,7 +365,7 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
 }
 
 // CONTACTS PAGE
-class ContactsViewController: UIViewController {
+class ContactsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var contactNames = [String]()
     var contacts = [contact]()
@@ -405,6 +405,18 @@ class ContactsViewController: UIViewController {
             print(contact.firstName + " " + contact.lastName)
             contactNames.append(contact.firstName + " " + contact.lastName)
         }
+    }
+    
+    //TABLE FUNCTION
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        return(contactNames.count)
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        let contact_cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
+        contact_cell.textLabel?.text = contactNames[indexPath.row]
+        
+        return(contact_cell)
     }
     
     override func didReceiveMemoryWarning() {
