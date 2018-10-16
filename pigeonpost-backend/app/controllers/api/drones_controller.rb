@@ -1,6 +1,5 @@
 module Api
   class DronesController < ApplicationController
-    # Make sure to remove this
 
     def index
       render partial: "shared/json/drones.json", locals: {
