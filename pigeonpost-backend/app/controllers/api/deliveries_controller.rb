@@ -34,5 +34,21 @@ module Api
           receiver: User.find(params[:receiver_id])
       }
     end
+
+    def index_by_user_and_status
+      params.permit(:user_id, :status)
+      deliveries = Delivery.includes(:sender, :receiver)
+        .where("deliveries.sender_id = ? OR deliveries.receiver_id = ?",
+         params[:user_id],
+         params[:user_id])
+
+      if params[:status] != nil
+        deliveries = deliveries.where(status: params[:status])
+      end
+
+      render partial: "shared/json/deliveries.json", locals: {
+          deliveries: deliveries
+      }
+    end
   end
 end
