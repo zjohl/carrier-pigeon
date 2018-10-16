@@ -1,6 +1,5 @@
 module Api
   class DeliveriesController < ApplicationController
-    # Make sure to remove this
 
     def index
       render partial: "shared/json/deliveries.json", locals: {

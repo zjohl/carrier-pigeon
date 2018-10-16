@@ -1,6 +1,5 @@
 module Api
   class UsersController < ApplicationController
-    # Make sure to remove this
 
     def index
       render partial: "shared/json/users.json", locals: {
