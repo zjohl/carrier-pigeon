@@ -292,42 +292,46 @@ class HomeViewController: UIViewController, DJISDKManagerDelegate {
     
     @IBAction func callDroneButton(_ sender: Any) {
         // check if summoning is already in progress
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
+        // ** THIS HASNT BEEN TESTED
+        
+        var deliveries: [delivery] = []
+        var in_progress = false
+        
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries?userId=" + String(currentUser.id)) else { return }
         
         var request = URLRequest(url: url)
+        let semaphore = DispatchSemaphore(value: 0)
         request.httpMethod = "GET"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 10
-        let semaphore = DispatchSemaphore(value: 0)
         
         let session = URLSession.shared
-        session.dataTask(with: request) { (data, response, error) in
+        session.dataTask(with: url) { (data, response, error) in
             
-            if let response = response {
-                print("JSON Response: \(response)")
+            guard let data = data else { return }
+            do {
+                let result = try JSONDecoder().decode(deliveries_response.self, from: data)
+                deliveries = result.deliveries
+                
+            } catch {
+                print(error)
             }
             
-            if let data = data {
-                print("Data: \(data)")
-                    do {
-                        let parseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
-                
-                        let meta = parseJSON!["meta"] as? [String:Any]
-                        print("Meta: \(meta)")
-                
-                    } catch { print(error) }
-            }
             semaphore.signal()
             }.resume()
         
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        print("Deliveries: \(deliveries)")
         
-        //TODO: check if there are any summons in progress, if so execute
-        //if call_in_progress {
-            // go to in progress page, e.g. performSegue(withIdentifier: "homeToCallDrone2", sender: sender)
-        //} else {
+        for delivery in deliveries {
+            if delivery.sender.id == delivery.receiver.id && delivery.status == "In Progress" {
+                self.showAlertViewWithTitle(title:"Drone Request In Progress", withMessage: "Your drone is on its way! Check its status from the Delivery Tracker.")
+                in_progress = true
+            }
+        }
+        
+        if !in_progress {
             performSegue(withIdentifier: "homeToCallDrone", sender: sender)
-        //}
+        }
     }
     
     @IBAction func sendDroneButton(_ sender: Any) {
