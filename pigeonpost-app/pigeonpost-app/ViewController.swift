@@ -218,40 +218,20 @@ class ViewController: UIViewController {
 
 
 
-class HomeViewController: UIViewController, DJISDKManagerDelegate {
+class HomeViewController: UIViewController {
     
     @IBOutlet weak var batteryLabel: UILabel!
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        DJISDKManager.registerApp(with: self)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-    }
-    
-    // DJISDKManagerDelegate Methods
-    func productConnected(_ product: DJIBaseProduct?) {
-        NSLog("Product Connected")
-    }
-    func productDisconnected() {
-        NSLog("Product Disconnected")
-    }
-    
-    func appRegisteredWithError(_ error: Error?) {
-        
-        var message = "Register App Succeeded!"
-        if (error != nil) {
-            message = "Register app failed! Please enter your app key and check the network."
-        }else{
-            NSLog(message);
-        }
     }
     
     @IBAction func signOutButton(_ sender: Any) {
@@ -443,12 +423,13 @@ class ContactsViewController: UIViewController, UITableViewDelegate, UITableView
 }
 
 // CALL DRONE PAGE
-class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, DJISDKManagerDelegate {
     
     @IBOutlet weak var pickerView: UIPickerView!
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var statusLabel: UILabel!
     
+   // Code for waypoints in picker view-------------------------------------
     let waypoint1 = MKPointAnnotation()
     let waypoint2 = MKPointAnnotation()
     let waypoint3 = MKPointAnnotation()
@@ -469,8 +450,38 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        DJISDKManager.registerApp(with: self)
+    }
+    //----------------------------------------------------------
+    
+    // DJISDKManagerDelegate Methods
+    func productConnected(_ product: DJIBaseProduct?) {
+        if let _ = product {
+            print("Result True: let _ = product")
+            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
+                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
+                print("Initializing flight controller...")
+                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
+                flightController.delegate = (self as! DJIFlightControllerDelegate)
+            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
+        } else { print("Result False: let _ = product")}
+    }
+    func productDisconnected() {
+        NSLog("Product Disconnected")
     }
     
+    func appRegisteredWithError(_ error: Error?) {
+        
+        if (error != nil) {
+            print("Register App Failed!")
+        } else {
+            print("Register App Succeeded! Starting connection to product...")
+            DJISDKManager.startConnectionToProduct()
+        }
+    }
+    //----------------------------------------------------------
+    
+    //Initialization ----------------------------------------------------------
     override func viewWillAppear(_ animated: Bool) {
         pickerView.delegate = self
         pickerView.dataSource = self
@@ -496,8 +507,12 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        DJISDKManager.registerApp(with: self)
     }
-
+    //----------------------------------------------------------
+    
+    
+    // Buttons ----------------------------------------------------------
     @IBAction func backButton(_ sender: Any) {
         performSegue(withIdentifier: "callDroneToHome", sender: sender)
     }
@@ -505,80 +520,76 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     @IBOutlet weak var callCancel: UIButton!
     @IBAction func callDroneButton(_ sender: Any) {
         
-        if callCancel.currentTitle == "Request" {
-            //TODO: perform delivery request, check response code
-            
-            var lat: Float = 0
-            var long: Float = 0
-            
-            if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 1" {
-                lat = 42.339932
-                long = -71.098401
-            } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 2" {
-                lat = 42.341305
-                long = -71.096638
-            } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 3" {
-                lat = 42.340646
-                long = -71.097516
-            }
-            
-            var dict = ["id": 0, "droneId": 0, "status": "in progress", "createdDate": 0, "updatedDate": 0, "origin": ["latitude": 0, "longitude": 0], "destination": ["latitude": lat, "longitude": long], "sender": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id], "receiver": ["firstName": currentUser.firstName, "lastName": currentUser.lastName, "id": currentUser.id]] as [String : Any]
-            
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
-                return
-            }
-            
-            guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.httpBody = jsonData as Data
-            request.timeoutInterval = 10
-            var responseCode: Int
-            let semaphore = DispatchSemaphore(value: 0)
-
-            let session = URLSession.shared
-            session.dataTask(with: request) { (data, response, error) in
-                
-                if let response = response {
-                    print("JSON Response: \(response)")
-                }
-                
-                if let data = data {
-                    print("Data: \(data)")
-//                    do {
-//                        let parseJSON = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
-//
-//                        let meta = parseJSON!["meta"] as? [String:Any]
-//
-//                    }catch { print(error) }
-                }
-                semaphore.signal()
-                }.resume()
-            
-            _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-            
-            responseCode = 200 //for testing, should be removed once we get actual response
-            
-            if responseCode == 200 {
-                callCancel.setTitle("Cancel", for: .normal)
-                statusLabel.text! = "Confirmed! Drone is on its way to " + waypoints[pickerView.selectedRow(inComponent: 0)]
-            } else {
-                statusLabel.text! = "An unexpected error occurred."
-            }
-            
-        } else {
-            //TODO: cancel request
-            
-            let responseCode = 200
-            if responseCode == 200 {
-                callCancel.setTitle("Request", for: .normal)
-                statusLabel.text! = "Drone has been cancelled."
-            } else {
-                statusLabel.text! = "An unexpected error occurred."
-            }
+        var lat: Float = 0
+        var long: Float = 0
+        
+        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 1" {
+            lat = 42.339932
+            long = -71.098401
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 2" {
+            lat = 42.341305
+            long = -71.096638
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 3" {
+            lat = 42.340646
+            long = -71.097516
         }
+        
+        let dest_waypoint = DJIWaypoint(coordinate: CLLocationCoordinate2D(latitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(long)))
+        guard let droneLocationKey = DJIFlightControllerKey(param: DJIFlightControllerParamAircraftLocation) else { return }
+            
+        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else { return }
+            
+        let droneLocation = droneLocationValue.value as! CLLocation
+        let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
+
+    
+        func initializeMission() {
+
+            var djiMission = DJIMutableWaypointMission()
+
+            let mission = djiMission
+            djiMission.add(origin_waypoint)
+            djiMission.add(dest_waypoint)
+
+//            // 4.
+//            djiMission.finishedAction = DJIWaypointMissionFinishedAction.noAction
+//            djiMission.autoFlightSpeed = 2
+//            djiMission.maxFlightSpeed = 4
+//            djiMission.headingMode = .auto
+//            djiMission.flightPathMode = .normal
+//
+//            // 5.
+//            if let error = djiMission.checkParameters() {
+//                print("Waypoint Mission parameters are invalid: \(error.localizedDescription)")
+//                return
+//            }
+//
+//            // 6.
+//            if let error = DJISmissionOperator.load(djiMission) {
+//                print(error.localizedDescription)
+//            }
+//
+//            // 7.
+//            missionOperator.addListener(toUploadEvent: self, with: DispatchQueue.main) { error in
+//                print("Upload")
+//                if error.currentState.rawValue == 5 {
+//                    self.state = .flying
+//                    self.startMission()
+//                }
+//            }
+//
+//            // 8.
+//            missionOperator.uploadMission() { error in
+//                if let error = error {
+//                    print("Upload error")
+//                    print(error.localizedDescription)
+//                } else {
+//                    print("Upload finished")
+//                    self.state = .flying
+//                }
+//            }
+        }
+        
     }
 }
 
