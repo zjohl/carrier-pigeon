@@ -308,7 +308,7 @@ components:
           format: "int32"
           minimum: 0
           maximum: 100
-        inFlight:
+        status:
           type: "string"
         destination:
           $ref: "#/components/schemas/Coordinates"
