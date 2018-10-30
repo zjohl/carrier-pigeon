@@ -218,7 +218,7 @@ class ViewController: UIViewController {
 
 
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var batteryLabel: UILabel!
     
@@ -309,6 +309,55 @@ class HomeViewController: UIViewController {
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
         
+    }
+    
+    //CONTACTS
+    var contactNames = [String]()
+    var contacts = [contact]()
+    @IBOutlet weak var email: UITextField!
+    @IBOutlet weak var contactsTable: UITableView!
+    @IBOutlet weak var confirmationLabel: UILabel!
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/users/" + String(currentUser.id)) else { return }
+        
+        let session = URLSession.shared
+        session.dataTask(with: url) { (data, response, error) in
+            
+            guard let data = data else { return }
+            do {
+                let result = try JSONDecoder().decode(user_with_contacts.self, from: data)
+                print("Result: \(result)")
+                self.contacts = result.contacts
+                
+            } catch {
+                print(error)
+            }
+            
+            semaphore.signal()
+            }.resume()
+        
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        
+        for contact in contacts {
+            print(contact.firstName + " " + contact.lastName)
+            contactNames.append(contact.firstName + " " + contact.lastName)
+        }
+    }
+    
+    //TABLE FUNCTION
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        return(contactNames.count)
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        let contact_cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
+        contact_cell.textLabel?.text = contactNames[indexPath.row]
+        
+        return(contact_cell)
     }
 }
 
