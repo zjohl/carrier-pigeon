@@ -341,7 +341,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         print("Status Code: \(statusCode)")
         
-        if statusCode == 202 {
+        if statusCode == 201 {
             self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent! Check Pending Deliveries for updates.")
         }
         else {
