@@ -314,7 +314,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         //TODO: determine which user is selected int he table and use their info in the receiver fields
         
-        let dict = ["drone_id" : 0, "status" : "new_request", "origin": ["latitude" : 0, "longitude" : 0], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : 0, "longitude" : 0], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
         
@@ -652,7 +652,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         //let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
         // Once the above works, use this dict to reference drone location. for now testing with dummy data
-        //        let dict = ["drone_id" : 0, "status" : "new_request", "origin": ["latitude" : Int(droneLocation.coordinate.latitude), "longitude" : Int(droneLocation.coordinate.longitude)], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        //        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : Int(droneLocation.coordinate.latitude), "longitude" : Int(droneLocation.coordinate.longitude)], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
