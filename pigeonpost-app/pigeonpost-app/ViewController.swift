@@ -201,8 +201,8 @@ class ViewController: UIViewController {
                     
                 }catch { print(error) }
             }
-            }.resume()
-            self.showAlertViewWithTitle(title:"Account Created!", withMessage: "Your account has been created. Please go back to login for the first time.")
+        }.resume()
+        self.showAlertViewWithTitle(title:"Account Created!", withMessage: "Your account has been created. Please go back to login for the first time.")
             
         }
     }
@@ -218,7 +218,9 @@ class ViewController: UIViewController {
 
 
 
-class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, DJISDKManagerDelegate {
+    
+    var selected_contact = contact(firstName: "", lastName: "", id: 0)
     
     @IBOutlet weak var batteryLabel: UILabel!
     
@@ -228,6 +230,34 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        DJISDKManager.registerApp(with: self)
+    }
+    //----------------------------------------------------------
+    
+    // DJISDKManagerDelegate Methods
+    func productConnected(_ product: DJIBaseProduct?) {
+        if let _ = product {
+            print("Result True: let _ = product")
+            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
+                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
+                print("Initializing flight controller...")
+                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
+                flightController.delegate = (self as! DJIFlightControllerDelegate)
+            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
+        } else { print("Result False: let _ = product")}
+    }
+    func productDisconnected() {
+        NSLog("Product Disconnected")
+    }
+    
+    func appRegisteredWithError(_ error: Error?) {
+        
+        if (error != nil) {
+            print("Register App Failed!")
+        } else {
+            print("Register App Succeeded! Starting connection to product...")
+            DJISDKManager.startConnectionToProduct()
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -283,10 +313,38 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     @IBAction func sendDroneButton(_ sender: Any) {
-        // TODO: Send delivery request to recipient
-        let responseCode = 200
-        if responseCode == 200 {
-            self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent! Check Pending Deliveries for updates.")
+        
+        var recipient = selected_contact
+        
+        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : 0, "longitude" : 0], "sender_id" : currentUser.id, "receiver_id" : recipient.id] as [String : Any]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+        
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
+        
+        var statusCode = 0
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData as Data
+        request.timeoutInterval = 10
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        print("Starting URL session")
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print(response)
+                statusCode = httpResponse.statusCode
+            }
+            semaphore.signal()
+            }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        print("Status Code: \(statusCode)")
+        
+        if statusCode == 201 {
+            self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent to \(recipient.firstName)! Check Pending Deliveries for updates.")
         }
         else {
             self.showAlertViewWithTitle(title:"Delivery Error", withMessage: "An unexpected error occurred. Please try again later.")
@@ -358,6 +416,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         contact_cell.textLabel?.text = contactNames[indexPath.row]
         
         return(contact_cell)
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selected_contact = self.contacts[indexPath.row]
+        print("Selected contact \(selected_contact)")
     }
 }
 
@@ -568,6 +631,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     @IBOutlet weak var callCancel: UIButton!
     @IBAction func callDroneButton(_ sender: Any) {
+        print("Call drone button pressed...")
         
         var lat: Float = 0
         var long: Float = 0
@@ -584,21 +648,54 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         }
         
         let dest_waypoint = DJIWaypoint(coordinate: CLLocationCoordinate2D(latitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(long)))
+        
         guard let droneLocationKey = DJIFlightControllerKey(param: DJIFlightControllerParamAircraftLocation) else { return }
+        print("Drone Location Key: \(droneLocationKey)")
+        
+        // This isn't working?? Probably because nothing is connected
+        //guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else { return }
+        
+        //let droneLocation = droneLocationValue.value as! CLLocation
+        //let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
+        
+        // Once the above works, use this dict to reference drone location. for now testing with dummy data
+        //        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : Int(droneLocation.coordinate.latitude), "longitude" : Int(droneLocation.coordinate.longitude)], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+        
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
+        
+        var statusCode = 0
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData as Data
+        request.timeoutInterval = 10
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        print("Starting URL session")
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
             
-        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else { return }
-            
-        let droneLocation = droneLocationValue.value as! CLLocation
-        let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
-
-    
+            if let httpResponse = response as? HTTPURLResponse {
+                print(response)
+                statusCode = httpResponse.statusCode
+            }
+            semaphore.signal()
+        }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        print("Status Code: \(statusCode)")
+        
+        // DJI Mission initialization ------------
         func initializeMission() {
 
             var djiMission = DJIMutableWaypointMission()
 
             let mission = djiMission
-            djiMission.add(origin_waypoint)
-            djiMission.add(dest_waypoint)
+            // we need actual data in droneLocationValue for this to work
+//            djiMission.add(origin_waypoint)
+//            djiMission.add(dest_waypoint)
 
 //            // 4.
 //            djiMission.finishedAction = DJIWaypointMissionFinishedAction.noAction
