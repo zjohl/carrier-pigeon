@@ -69,8 +69,8 @@ struct delivery: Decodable {
     var status: String
     var sender: contact
     var receiver: contact
-    var createdDate: Int
-    var updatedDate: Int
+    var createdDate: String
+    var updatedDate: String
 }
 
 struct deliveries_response: Decodable {
@@ -741,7 +741,11 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
 
 
 // DELIVERIES PAGE
-class DeliveriesViewController: UIViewController {
+class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    @IBOutlet weak var deliveryTable: UITableView!
+    @IBOutlet weak var requestTable: UITableView!
+
     
     var unfiltered_deliveries: [delivery] = [] // all deliveries retruned from initial get request
     
@@ -755,29 +759,29 @@ class DeliveriesViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries?userId=" + String(currentUser.id)) else { return }
-        
-        var request = URLRequest(url: url)
-        let semaphore = DispatchSemaphore(value: 0)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = 10
-        
-        let session = URLSession.shared
-        session.dataTask(with: url) { (data, response, error) in
-            
-            guard let data = data else { return }
-            do {
-                let result = try JSONDecoder().decode(deliveries_response.self, from: data)
-                self.unfiltered_deliveries = result.deliveries
-                
-            } catch {
-                print(error)
-            }
-            
-            semaphore.signal()
-            }.resume()
+        override func viewWillAppear(_ animated: Bool) {
+
+
+            let semaphore = DispatchSemaphore(value: 0)
+            guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search/?user_id=" + String(currentUser.id)) else { return }
+
+            let session = URLSession.shared
+            session.dataTask(with: url) { (data, response, error) in
+
+                guard let data = data else { return }
+                do {
+                    let result = try JSONDecoder().decode(deliveries_response.self, from: data)
+                    print("Result: \(result)")
+                    self.unfiltered_deliveries = result.deliveries
+
+                } catch {
+                    print(error)
+                }
+
+                semaphore.signal()
+                }.resume()
+
+            _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         
         // split between Pending Requests and Delivery Tracker (history)
         /* delivery status is assumed to be one of:
@@ -788,7 +792,7 @@ class DeliveriesViewController: UIViewController {
          */
         for delivery in unfiltered_deliveries {
             
-            if delivery.status == "Pending" {
+            if delivery.status == "pending" {
                 requests.append(delivery)
                 if delivery.sender.id == currentUser.id {
                     request_display.append("To: " + delivery.receiver.firstName)
@@ -824,6 +828,30 @@ class DeliveriesViewController: UIViewController {
         print("Deliver Tracker table labels: \(deliveries_display)") // Array to get displayed in Display Tracker
         print("Pending Requests table data: \(requests)")
         print("Pending Requests table labels: \(request_display)") // Array to get displayed in Pending Requests
+    }
+    
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        if (tableView == deliveryTable) {
+            return(deliveries_display.count)
+        }
+        
+        else  {
+            return(request_display.count)
+        }
+        
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        let delivery_cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
+        if (tableView == deliveryTable) {
+            delivery_cell.textLabel?.text = deliveries_display[indexPath.row]
+            return delivery_cell
+        }
+        else {
+            delivery_cell.textLabel?.text = request_display[indexPath.row]
+            return(delivery_cell)
+        }
+
     }
     
     override func didReceiveMemoryWarning() {
