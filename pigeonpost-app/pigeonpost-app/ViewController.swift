@@ -21,8 +21,8 @@ struct drone: Decodable {
 }
 
 struct coordinates: Decodable {
-    var latitude: Float
-    var longitude: Float
+    var latitude: Float?
+    var longitude: Float?
 }
 
 struct user: Decodable {
@@ -745,7 +745,6 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     @IBOutlet weak var deliveryTable: UITableView!
     @IBOutlet weak var requestTable: UITableView!
-
     
     var unfiltered_deliveries: [delivery] = [] // all deliveries retruned from initial get request
     
@@ -759,39 +758,41 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidLoad()
     }
     
-        override func viewWillAppear(_ animated: Bool) {
-
-
-            let semaphore = DispatchSemaphore(value: 0)
-            guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search/?user_id=" + String(currentUser.id)) else { return }
-
-            let session = URLSession.shared
-            session.dataTask(with: url) { (data, response, error) in
-
-                guard let data = data else { return }
-                do {
-                    let result = try JSONDecoder().decode(deliveries_response.self, from: data)
-                    print("Result: \(result)")
-                    self.unfiltered_deliveries = result.deliveries
-
-                } catch {
-                    print(error)
-                }
-
-                semaphore.signal()
-                }.resume()
-
-            _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+    override func viewWillAppear(_ animated: Bool) {
+        get_deliveries()
+    }
+    
+    func get_deliveries() {
+        let semaphore = DispatchSemaphore(value: 0)
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search/?user_id=" + String(currentUser.id)) else { return }
+        
+        let session = URLSession.shared
+        session.dataTask(with: url) { (data, response, error) in
+            guard let data = data else { return }
+            print(data)
+            do {
+                let result = try JSONDecoder().decode(deliveries_response.self, from: data)
+                print("Result: \(result)")
+                self.unfiltered_deliveries = result.deliveries
+                
+            } catch {
+                print(error)
+            }
+            
+            semaphore.signal()
+            }.resume()
+        
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         
         // split between Pending Requests and Delivery Tracker (history)
         /* delivery status is assumed to be one of:
-            - Pending
-            - In Progress
-            - Cancelled
-            - Complete
+         - Pending
+         - In Progress
+         - Cancelled
+         - Complete
          */
         for delivery in unfiltered_deliveries {
-            
+            print(delivery)
             if delivery.status == "pending" {
                 requests.append(delivery)
                 if delivery.sender.id == currentUser.id {
@@ -804,7 +805,7 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                 
                 if delivery.sender.id == delivery.receiver.id && delivery.status != "In Progress" { // completed or cancelled summon, we dont want to display it
                     continue
-                
+                    
                 } else {
                     
                     deliveries.append(delivery)
