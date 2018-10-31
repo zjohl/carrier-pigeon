@@ -673,6 +673,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             if let httpResponse = response as? HTTPURLResponse {
                 print(response)
+                statusCode = httpResponse.statusCode
             }
             semaphore.signal()
         }.resume()
