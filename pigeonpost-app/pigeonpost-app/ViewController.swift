@@ -220,6 +220,8 @@ class ViewController: UIViewController {
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, DJISDKManagerDelegate {
     
+    var selected_contact = contact(firstName: "", lastName: "", id: 0)
+    
     @IBOutlet weak var batteryLabel: UILabel!
     
     override func viewDidAppear(_ animated: Bool) {
@@ -312,9 +314,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @IBAction func sendDroneButton(_ sender: Any) {
         
-        //TODO: determine which user is selected int he table and use their info in the receiver fields
+        var recipient = selected_contact
         
-        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : 0, "longitude" : 0], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : 0, "longitude" : 0], "sender_id" : currentUser.id, "receiver_id" : recipient.id] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
         
@@ -342,7 +344,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         print("Status Code: \(statusCode)")
         
         if statusCode == 201 {
-            self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent! Check Pending Deliveries for updates.")
+            self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent to \(recipient.firstName)! Check Pending Deliveries for updates.")
         }
         else {
             self.showAlertViewWithTitle(title:"Delivery Error", withMessage: "An unexpected error occurred. Please try again later.")
@@ -414,6 +416,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         contact_cell.textLabel?.text = contactNames[indexPath.row]
         
         return(contact_cell)
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        selected_contact = self.contacts[indexPath.row]
+        print("Selected contact \(selected_contact)")
     }
 }
 
