@@ -743,6 +743,12 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
 // DELIVERIES PAGE
 class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    let timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(test), userInfo: nil, repeats: true)
+    
+    @objc func test() {
+        print("testing")
+    }
+    
     @IBOutlet weak var deliveryTable: UITableView!
     @IBOutlet weak var requestTable: UITableView!
     
@@ -762,7 +768,7 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         get_deliveries()
     }
     
-    func get_deliveries() {
+    @objc func get_deliveries() {
         let semaphore = DispatchSemaphore(value: 0)
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search/?user_id=" + String(currentUser.id)) else { return }
         
