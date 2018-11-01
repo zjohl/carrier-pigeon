@@ -629,6 +629,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         performSegue(withIdentifier: "callDroneToHome", sender: sender)
     }
     
+    @IBOutlet weak var testLabel: UILabel!
     @IBOutlet weak var callCancel: UIButton!
     @IBAction func callDroneButton(_ sender: Any) {
         print("Call drone button pressed...")
@@ -653,8 +654,12 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         print("Drone Location Key: \(droneLocationKey)")
         
         // This isn't working?? Probably because nothing is connected
-        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else { return }
+        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
+            testLabel.text = "drone location value failed"
+            return
+        }
         print("Drone Location Value: \(droneLocationValue)")
+        testLabel.text = "drone location value found"
         //let droneLocation = droneLocationValue.value as! CLLocation
         //let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
