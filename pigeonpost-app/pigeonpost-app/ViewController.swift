@@ -743,10 +743,26 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
 // DELIVERIES PAGE
 class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    let timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(test), userInfo: nil, repeats: true)
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
     
-    @objc func test() {
-        print("testing")
+    override func viewWillAppear(_ animated: Bool) {
+        get_deliveries()
+        // start timer to make GET deliveries request every 5 seconds
+        newBackgroundTimer()
+    }
+    
+    func newBackgroundTimer() -> Void {
+        DispatchQueue.global(qos: .background).async {
+            
+            // timer calls function check_deliveries every 5 seconds
+            // this function checks for new delivery requests
+            let timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.check_deliveries), userInfo: nil, repeats: true)
+            let runLoop = RunLoop.current
+            runLoop.add(timer, forMode: .defaultRunLoopMode)
+            runLoop.run()
+        }
     }
     
     @IBOutlet weak var deliveryTable: UITableView!
@@ -760,15 +776,36 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
     var requests: [delivery] = []           // filtered deliveries - for the pending delivery requests table
     var request_display: [String] = []
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // this function GETs all deliveries for the user and checks for new delivery requests
+    // if there's a new delivery request found, user is notified
+    @objc func check_deliveries() {
+        get_deliveries() // this function gets all deliveries and store in unfiltered_deliveries
+        
+        for request in requests {
+            // Declare Alert message
+            let dialogMessage = UIAlertController(title: "New Delivery Request", message: "New delivery request from \(request.sender.firstName). Would you like to accept this delivery?", preferredStyle: .alert)
+            
+            // Create OK button with action handler
+            let accept = UIAlertAction(title: "Accept", style: .default, handler: { (action) -> Void in
+                print("Accept button tapped")
+            })
+            
+            // Create Cancel button with action handlder
+            let decline = UIAlertAction(title: "Decline", style: .cancel) { (action) -> Void in
+                print("Decline button tapped")
+            }
+            
+            //Add OK and Cancel button to dialog message
+            dialogMessage.addAction(accept)
+            dialogMessage.addAction(decline)
+            
+            // Present dialog message to user
+            self.present(dialogMessage, animated: true, completion: nil)
+            
+        }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        get_deliveries()
-    }
-    
-    @objc func get_deliveries() {
+    func get_deliveries() {
         let semaphore = DispatchSemaphore(value: 0)
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search/?user_id=" + String(currentUser.id)) else { return }
         
