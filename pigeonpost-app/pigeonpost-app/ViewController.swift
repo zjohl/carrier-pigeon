@@ -653,8 +653,8 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         print("Drone Location Key: \(droneLocationKey)")
         
         // This isn't working?? Probably because nothing is connected
-        //guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else { return }
-        
+        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else { return }
+        print("Drone Location Value: \(droneLocationValue)")
         //let droneLocation = droneLocationValue.value as! CLLocation
         //let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
@@ -813,6 +813,7 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
             // Create OK button with action handler
             let accept = UIAlertAction(title: "Accept", style: .default, handler: { (action) -> Void in
                 print("Accept button tapped")
+                
             })
             
             // Create Cancel button with action handlder
