@@ -688,52 +688,77 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         print("Status Code: \(statusCode)")
         
         // DJI Mission initialization ------------
-        func initializeMission() {
+        func initializeMission(_ delivery: delivery) {
+            // This is assuming we always have a delivery, if we use the waypoints
+            // from above then we can just pass them in to the mission
+            
+//            // Create waypoint from origin
+//            let originCoordinate = CLLocationCoordinate2D.init(latitude: CLLocationDegrees(delivery.origin.latitude), longitude: CLLocationDegrees(delivery.origin.longitude))
+//            let originWayPoint = DJIWaypoint.init(coordinate: originCoordinate)
+//
+//            // Create waypoint from destination
+//            let destinationCoordinate = CLLocationCoordinate2D.init(latitude: CLLocationDegrees(delivery.destination.latitude), longitude: CLLocationDegrees(delivery.destination.longitude))
+//            let destinationWayPoint = DJIWaypoint.init(coordinate: destinationCoordinate)
 
+            // Add the waypoints to a mission
             var djiMission = DJIMutableWaypointMission()
+//            djiMission.add(originWayPoint)
+//            djiMission.add(destinationWayPoint)
 
-            let mission = djiMission
-            // we need actual data in droneLocationValue for this to work
-//            djiMission.add(origin_waypoint)
-//            djiMission.add(dest_waypoint)
+            // 4. Configure the mission
+            djiMission.finishedAction = DJIWaypointMissionFinishedAction.noAction
+            djiMission.autoFlightSpeed = 2
+            djiMission.maxFlightSpeed = 4
+            djiMission.headingMode = .auto
+            djiMission.flightPathMode = .normal
 
-//            // 4.
-//            djiMission.finishedAction = DJIWaypointMissionFinishedAction.noAction
-//            djiMission.autoFlightSpeed = 2
-//            djiMission.maxFlightSpeed = 4
-//            djiMission.headingMode = .auto
-//            djiMission.flightPathMode = .normal
-//
-//            // 5.
-//            if let error = djiMission.checkParameters() {
-//                print("Waypoint Mission parameters are invalid: \(error.localizedDescription)")
-//                return
-//            }
-//
-//            // 6.
-//            if let error = DJISmissionOperator.load(djiMission) {
-//                print(error.localizedDescription)
-//            }
-//
-//            // 7.
-//            missionOperator.addListener(toUploadEvent: self, with: DispatchQueue.main) { error in
-//                print("Upload")
-//                if error.currentState.rawValue == 5 {
+            // 5. Validate our mission
+            if let error = djiMission.checkParameters() {
+                print("Waypoint Mission parameters are invalid: \(error.localizedDescription)")
+                return
+            }
+            
+            // We need to get the mission operator from mission control
+            // Not really sure about this syntax
+            let missionControl = DJISDKManager.missionControl()
+            if(missionControl == nil) {
+                print("Invalid mission control")
+            }
+            
+            let waypointMissionOperator = missionControl!.waypointMissionOperator()
+            
+            // 6.
+            if let error = waypointMissionOperator.load(djiMission) {
+                print(error.localizedDescription)
+            }
+
+            // 7.
+            waypointMissionOperator.addListener(toUploadEvent: self, with: DispatchQueue.main) { error in
+                print("Upload")
+                if error.currentState.rawValue == 5 {
 //                    self.state = .flying
 //                    self.startMission()
-//                }
-//            }
-//
-//            // 8.
-//            missionOperator.uploadMission() { error in
-//                if let error = error {
-//                    print("Upload error")
-//                    print(error.localizedDescription)
-//                } else {
-//                    print("Upload finished")
+                }
+            }
+
+            // 8.
+            waypointMissionOperator.uploadMission() { error in
+                if let error = error {
+                    print("Upload error")
+                    print(error.localizedDescription)
+                } else {
+                    print("Upload finished")
 //                    self.state = .flying
-//                }
-//            }
+                }
+            }
+            
+            // 9.
+            waypointMissionOperator.startMission(completion: { error in
+                if let error = error {
+                    print("Error starting mission")
+                    print(error.localizedDescription)
+                }
+            })
         }
         
     }
