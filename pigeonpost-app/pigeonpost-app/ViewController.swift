@@ -798,14 +798,6 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var deliveryTable: UITableView!
     @IBOutlet weak var requestTable: UITableView!
     
-    var unfiltered_deliveries: [delivery] = [] // all deliveries retruned from initial get request
-    
-    var deliveries: [delivery] = []         // filtered deliveries - for the delivery tracker table
-    var deliveries_display: [String] = []   // what gets displayed for the delivery in the table view
-    
-    var requests: [delivery] = []           // filtered deliveries - for the pending delivery requests table
-    var request_display: [String] = []
-    
     // this function GETs all deliveries for the user and checks for new delivery requests
     // if there's a new delivery request found, user is notified
     @objc func check_deliveries() {
@@ -836,7 +828,18 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
+    var unfiltered_deliveries: [delivery] = [] // all deliveries retruned from initial get request
+    var requests: [delivery] = []
+    var accepted: [delivery] = []
+    var confirmed: [delivery] = []
+    var done: [delivery] = []   // filtered complete/canceled deliveries
+    var in_progress: [delivery] = []
+    var in_progress_display: [String] = [] // what gets displayed for in progress deliveries
+    var done_display: [String] = [] // what gets displayed for done deliveries
+    
+    
     func get_deliveries() {
+        
         let semaphore = DispatchSemaphore(value: 0)
         guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search/?user_id=" + String(currentUser.id)) else { return }
         
@@ -858,60 +861,51 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         
-        // split between Pending Requests and Delivery Tracker (history)
-        /* delivery status is assumed to be one of:
-         - Pending
-         - In Progress
-         - Cancelled
-         - Complete
-         */
         for delivery in unfiltered_deliveries {
-            print(delivery)
-            if delivery.status == "pending" {
+            
+            if delivery.status == "requested" {
                 requests.append(delivery)
-                if delivery.sender.id == currentUser.id {
-                    request_display.append("To: " + delivery.receiver.firstName)
-                } else {
-                    request_display.append("From: " + delivery.sender.firstName)
-                }
-            }
-            else {
+            } else if delivery.status == "accepted" {
+                accepted.append(delivery)
+            } else if delivery.status == "confirmed" {
+                confirmed.append(delivery)
+            } else if delivery.status == "in_progress" {
+                in_progress.append(delivery)
                 
-                if delivery.sender.id == delivery.receiver.id && delivery.status != "In Progress" { // completed or cancelled summon, we dont want to display it
-                    continue
-                    
+                // check if it's a summon to determine what to display
+                if delivery.sender.id == delivery.receiver.id {
+                    in_progress_display.append("Call drone request in progress")
                 } else {
-                    
-                    deliveries.append(delivery)
-                    
-                    if delivery.sender.id == delivery.receiver.id { // incomplete summon
-                        deliveries_display.append("Drone request in progress")
-                    } else {
-                        
-                        if delivery.sender.id == currentUser.id {
-                            deliveries_display.append("To: " + delivery.receiver.firstName + " | Status: " + delivery.status)
-                        } else {
-                            deliveries_display.append("From: " + delivery.sender.firstName + " | Status: " + delivery.status)
-                        }
-                    }
-                    
+                    in_progress_display.append("In progress: " + delivery.sender.firstName + " >> " + delivery.receiver.firstName)
+                }
+                
+            } else {
+                done.append(delivery)
+                
+                // check if it's a summon to determine what to display
+                if delivery.sender.id == delivery.receiver.id {
+                    done_display.append("Call drone request: " + delivery.status)
+                } else {
+                    done_display.append("Delivery " + delivery.status + ": " + delivery.sender.firstName + ">" + delivery.receiver.firstName)
                 }
             }
         }
         
-        print("Deliver Tracker table data: \(deliveries)")
-        print("Deliver Tracker table labels: \(deliveries_display)") // Array to get displayed in Display Tracker
-        print("Pending Requests table data: \(requests)")
-        print("Pending Requests table labels: \(request_display)") // Array to get displayed in Pending Requests
+        print("Requested: \(requests)")
+        print("Accepted: \(accepted)")
+        print("Confirmed: \(confirmed)")
+        print("In Progress: \(in_progress)")
+        print("Done: \(done)")
+        
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if (tableView == deliveryTable) {
-            return(deliveries_display.count)
+            return(done_display.count)
         }
         
         else  {
-            return(request_display.count)
+            return(in_progress_display.count)
         }
         
     }
@@ -919,11 +913,11 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let delivery_cell = UITableViewCell(style: UITableViewCellStyle.default, reuseIdentifier: "cell")
         if (tableView == deliveryTable) {
-            delivery_cell.textLabel?.text = deliveries_display[indexPath.row]
+            delivery_cell.textLabel?.text = done_display[indexPath.row]
             return delivery_cell
         }
         else {
-            delivery_cell.textLabel?.text = request_display[indexPath.row]
+            delivery_cell.textLabel?.text = in_progress_display[indexPath.row]
             return(delivery_cell)
         }
 
