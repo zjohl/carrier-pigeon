@@ -270,12 +270,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     @IBAction func callDroneButton(_ sender: Any) {
         // check if summoning is already in progress
-        // ** THIS HASNT BEEN TESTED
-        
         var deliveries: [delivery] = []
-        var in_progress = false
+        var summon_in_progress = false
         
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries?userId=" + String(currentUser.id)) else { return }
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search?user_id=" + String(currentUser.id)) else { return }
         
         var request = URLRequest(url: url)
         let semaphore = DispatchSemaphore(value: 0)
@@ -289,6 +287,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             guard let data = data else { return }
             do {
                 let result = try JSONDecoder().decode(deliveries_response.self, from: data)
+                print("\n\nResult: \(result)")
                 deliveries = result.deliveries
                 
             } catch {
@@ -297,57 +296,119 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             
             semaphore.signal()
             }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        print("\n\nDeliveries: \(deliveries)")
         
-        print("Deliveries: \(deliveries)")
-        
+        var message = ""
         for delivery in deliveries {
-            if delivery.sender.id == delivery.receiver.id && delivery.status == "In Progress" {
-                self.showAlertViewWithTitle(title:"Drone Request In Progress", withMessage: "Your drone is on its way! Check its status from the Delivery Tracker.")
-                in_progress = true
+            if delivery.status == "in_progress" || delivery.status == "requested" || delivery.status == "accepted" || delivery.status == "confirmed" {
+                if delivery.sender.id == delivery.receiver.id {
+                    message = "Your drone is already on its way! Check its status from the Delivery Tracker."
+                    print(message)
+                    summon_in_progress = true
+                } else {
+                    message = "A delivery is already in progress! Please try again later."
+                    print(message)
+                    summon_in_progress = true
+                }
             }
         }
         
-        if !in_progress {
+        if !summon_in_progress {
             performSegue(withIdentifier: "homeToCallDrone", sender: sender)
+        } else {
+            self.showAlertViewWithTitle(title:"Drone Unavailable", withMessage: message)
         }
     }
     
     @IBAction func sendDroneButton(_ sender: Any) {
         
-        var recipient = selected_contact
+        // Check if delivery is already in progress
+        var deliveries: [delivery] = []
+        var delivery_in_progress = false
         
-        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : 0, "longitude" : 0], "sender_id" : currentUser.id, "receiver_id" : recipient.id] as [String : Any]
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/search?user_id=" + String(currentUser.id)) else { return }
         
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
-        
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
-        
-        var statusCode = 0
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData as Data
-        request.timeoutInterval = 10
         let semaphore = DispatchSemaphore(value: 0)
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 10
         
-        print("Starting URL session")
         let session = URLSession.shared
-        session.dataTask(with: request) { (data, response, error) in
+        session.dataTask(with: url) { (data, response, error) in
             
-            if let httpResponse = response as? HTTPURLResponse {
-                print(response)
-                statusCode = httpResponse.statusCode
+            guard let data = data else { return }
+            do {
+                let result = try JSONDecoder().decode(deliveries_response.self, from: data)
+                print("\n\nResult: \(result)")
+                deliveries = result.deliveries
+                
+            } catch {
+                print(error)
             }
+            
             semaphore.signal()
             }.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        print("Status Code: \(statusCode)")
+        print("\n\nDeliveries: \(deliveries)")
         
-        if statusCode == 201 {
-            self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent to \(recipient.firstName)! Check Pending Deliveries for updates.")
+        var message = ""
+        for delivery in deliveries {
+            if delivery.status == "in_progress" || delivery.status == "requested" || delivery.status == "accepted" || delivery.status == "confirmed" {
+                if delivery.sender.id == delivery.receiver.id {
+                    message = "Your drone is already on its way! Check its status from the Delivery Tracker."
+                    print(message)
+                    delivery_in_progress = true
+                } else {
+                    message = "A delivery is already in progress! Please try again later."
+                    print(message)
+                    delivery_in_progress = true
+                }
+            }
         }
-        else {
-            self.showAlertViewWithTitle(title:"Delivery Error", withMessage: "An unexpected error occurred. Please try again later.")
+        
+        if delivery_in_progress {
+            self.showAlertViewWithTitle(title:"Drone Unavailable", withMessage: message)
+        } else {
+            //----------------------------
+            // post delivery
+            var recipient = selected_contact
+            print("Recipient: \(recipient)")
+        
+            let dict = ["drone_id" : 0, "status" : "requested", "origin": ["latitude" : 0, "longitude" : 0], "sender_id" : currentUser.id, "receiver_id" : recipient.id] as [String : Any]
+        
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+        
+            guard let url2 = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries") else { return }
+        
+            var statusCode = 0
+            var request2 = URLRequest(url: url2)
+            request2.httpMethod = "POST"
+            request2.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request2.httpBody = jsonData as Data
+            request2.timeoutInterval = 10
+            let semaphore2 = DispatchSemaphore(value: 0)
+        
+            print("Starting URL session")
+            let session2 = URLSession.shared
+            session2.dataTask(with: request2) { (data, response, error) in
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    print(response)
+                    statusCode = httpResponse.statusCode
+                }
+                semaphore2.signal()
+                }.resume()
+            _ = semaphore2.wait(timeout: DispatchTime.distantFuture)
+            print("Status Code: \(statusCode)")
+        
+            if statusCode == 201 {
+                self.showAlertViewWithTitle(title:"Drone Request Sent", withMessage: "Your delivery request has been sent to \(recipient.firstName)! Check Pending Deliveries for updates.")
+            }
+            else {
+                self.showAlertViewWithTitle(title:"Delivery Error", withMessage: "An unexpected error occurred. Please try again later.")
+            }
         }
     }
     
@@ -592,6 +653,13 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         }
     }
     //----------------------------------------------------------
+    func showAlertViewWithTitle(title: String, withMessage message: String) {
+        
+        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction.init(title:"OK", style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+    }
     
     //Initialization ----------------------------------------------------------
     override func viewWillAppear(_ animated: Bool) {
@@ -654,12 +722,12 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         print("Drone Location Key: \(droneLocationKey)")
         
         // This isn't working?? Probably because nothing is connected
-        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
-            testLabel.text = "drone location value failed"
-            return
-        }
-        print("Drone Location Value: \(droneLocationValue)")
-        testLabel.text = "drone location value found"
+//        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
+//            testLabel.text = "drone location value failed"
+//            return
+//        }
+//        print("Drone Location Value: \(droneLocationValue)")
+//        testLabel.text = "drone location value found"
         //let droneLocation = droneLocationValue.value as! CLLocation
         //let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
@@ -691,6 +759,23 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         }.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         print("Status Code: \(statusCode)")
+        
+        if statusCode == 201 {
+            
+            //TODO: CALL FUNCTION TO INITIALIZE DJI MISSION
+            
+            let alert = UIAlertController(title: "Request Confirmed", message: "The drone is on its way!", preferredStyle: .alert)
+            let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
+                (_)in
+                self.performSegue(withIdentifier: "callDroneToHome", sender: self)
+            })
+            
+            alert.addAction(OKAction)
+            self.present(alert, animated: true, completion: nil)
+   
+        } else {
+            self.showAlertViewWithTitle(title:"Request Failed", withMessage: "An unexpected error occurred. Please try again later.")
+        }
         
         // DJI Mission initialization ------------
         func initializeMission(_ delivery: delivery) {
@@ -809,6 +894,7 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
             
             // Create OK button with action handler
             let accept = UIAlertAction(title: "Accept", style: .default, handler: { (action) -> Void in
+                
                 print("Accept button tapped")
                 
             })
@@ -865,10 +951,13 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
             
             if delivery.status == "requested" {
                 requests.append(delivery)
+                in_progress.append(delivery)
             } else if delivery.status == "accepted" {
                 accepted.append(delivery)
+                in_progress.append(delivery)
             } else if delivery.status == "confirmed" {
                 confirmed.append(delivery)
+                in_progress.append(delivery)
             } else if delivery.status == "in_progress" {
                 in_progress.append(delivery)
                 
@@ -896,6 +985,14 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         print("Confirmed: \(confirmed)")
         print("In Progress: \(in_progress)")
         print("Done: \(done)")
+        print("In Progress Deliveries (Labels):")
+        for i in in_progress_display {
+            print(i)
+        }
+        print("Done Deliveries (Labels):")
+        for i in done_display {
+            print(i)
+        }
         
     }
     
@@ -932,10 +1029,6 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidDisappear(animated)
     }
     
-    
-    @IBAction func refreshButton(_ sender: Any) {
-        viewWillAppear(true)
-    }
     
     @IBAction func backButton(_ sender: Any) {
         performSegue(withIdentifier: "deliveriesToHome", sender: sender)
