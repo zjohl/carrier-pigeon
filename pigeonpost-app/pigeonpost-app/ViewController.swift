@@ -892,8 +892,8 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         
         for request in requests {
             
+            // confirm this is person on receiving side-> notify them, else, ignore
             if request.receiver.id == currentUser.id {
-                
                 
                 // Declare Alert message
                 let dialogMessage = UIAlertController(title: "New Delivery Request", message: "New delivery request from \(request.sender.firstName). Would you like to accept this delivery?", preferredStyle: .alert)
@@ -948,6 +948,59 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                 // Present dialog message to user
                 self.present(dialogMessage, animated: true, completion: nil)
             }
+        }
+        
+        for delivery in accepted {
+            
+            // confirm that current user is the sender, notify them that receiver has accepted delivery
+            if delivery.sender.id == currentUser.id {
+                // Declare Alert message
+                let dialogMessage = UIAlertController(title: "Delivery Accepted", message: "\(delivery.receiver.firstName) has accepted your delivery! Prepare the package and click Launch Drone when the drone is ready for takeoff.", preferredStyle: .alert)
+                
+                // Create OK button with action handler
+                let ok = UIAlertAction(title: "Launch Drone", style: .default, handler: { (action) -> Void in
+                    if self.timer != nil {
+                        self.timer?.invalidate()
+                        self.timer = nil
+                    }
+                    
+                    print("Drone mission launced")
+                    
+                    let dict = ["status" : "in_progress"] as [String : Any]
+                    guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+                    guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(delivery.id)) else { return }
+                    var statusCode = 0
+                    var request = URLRequest(url: url)
+                    request.httpMethod = "PUT"
+                    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                    request.httpBody = jsonData as Data
+                    request.timeoutInterval = 10
+                    let semaphore = DispatchSemaphore(value: 0)
+                    
+                    let session = URLSession.shared
+                    session.dataTask(with: request) { (data, response, error) in
+                        
+                        if let httpResponse = response as? HTTPURLResponse {
+                            print(response)
+                            statusCode = httpResponse.statusCode
+                        }
+                        semaphore.signal()
+                        }.resume()
+                    _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+                    
+                    //TODO: INITIALIZE DRONE MISSION
+                    
+                    self.performSegue(withIdentifier: "deliveriesToHome", sender: self)
+                })
+                
+                //Add OK and Cancel button to dialog message
+                dialogMessage.addAction(ok)
+                
+                // Present dialog message to user
+                self.present(dialogMessage, animated: true, completion: nil)
+                
+            }
+            
         }
     }
     
@@ -1218,7 +1271,7 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
         print("Status Code: \(statusCode)")
         
         if statusCode == 200 {
-            let alert = UIAlertController(title: "Request Confirmed", message: "Delivery confirmed! The sender is preparing your package.", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Request Confirmed", message: "Delivery confirmed! The sender is preparing your package. Check its status on the View Delivery page.", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
                 (_)in
                 self.performSegue(withIdentifier: "acceptToDeliveries", sender: self)
