@@ -663,6 +663,37 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     //Initialization ----------------------------------------------------------
     override func viewWillAppear(_ animated: Bool) {
+        
+        guard let connectedKey = DJIProductKey(param: DJIParamConnection) else {
+            NSLog("Error creating the connectedKey")
+            return;
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            DJISDKManager.keyManager()?.startListeningForChanges(on: connectedKey, withListener: self, andUpdate: { (oldValue: DJIKeyedValue?, newValue : DJIKeyedValue?) in
+                if newValue != nil {
+                    if newValue!.boolValue {
+                        // At this point, a product is connected so we can show it.
+                        
+                        // UI goes on MT.
+                        DispatchQueue.main.async {
+                            self.productConnected(DJISDKManager.product())
+                        }
+                    }
+                }
+            })
+            DJISDKManager.keyManager()?.getValueFor(connectedKey, withCompletion: { (value:DJIKeyedValue?, error:Error?) in
+                if let unwrappedValue = value {
+                    if unwrappedValue.boolValue {
+                        // UI goes on MT.
+                        DispatchQueue.main.async {
+                            self.productConnected(DJISDKManager.product())
+                        }
+                    }
+                }
+            })
+        }
+        
         pickerView.delegate = self
         pickerView.dataSource = self
         waypoint1.coordinate = CLLocationCoordinate2D(latitude: 42.339932, longitude: -71.098401)
