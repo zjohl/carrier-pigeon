@@ -565,7 +565,6 @@ class ContactsViewController: UIViewController, UITableViewDelegate, UITableView
         var statusCode: Int = 0
         var request = URLRequest(url: url)
         let semaphore = DispatchSemaphore(value: 0)
-        
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData as Data
@@ -889,28 +888,54 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         get_deliveries() // this function gets all deliveries and store in unfiltered_deliveries
         
         for request in requests {
-            // Declare Alert message
-            let dialogMessage = UIAlertController(title: "New Delivery Request", message: "New delivery request from \(request.sender.firstName). Would you like to accept this delivery?", preferredStyle: .alert)
             
-            // Create OK button with action handler
-            let accept = UIAlertAction(title: "Accept", style: .default, handler: { (action) -> Void in
+            if request.receiver.id == currentUser.id {
+                // Declare Alert message
+                let dialogMessage = UIAlertController(title: "New Delivery Request", message: "New delivery request from \(request.sender.firstName). Would you like to accept this delivery?", preferredStyle: .alert)
                 
-                print("Accept button tapped")
+                // Create OK button with action handler
+                let accept = UIAlertAction(title: "Accept", style: .default, handler: { (action) -> Void in
+                    
+                    print("Accept button tapped")
+                    
+                })
                 
-            })
-            
-            // Create Cancel button with action handlder
-            let decline = UIAlertAction(title: "Decline", style: .cancel) { (action) -> Void in
-                print("Decline button tapped")
+                // Create Cancel button with action handlder
+                let decline = UIAlertAction(title: "Decline", style: .cancel) { (action) -> Void in
+                    
+                    print("Decline button tapped")
+                    
+                    let dict = ["status" : "cancelled"] as [String : Any]
+                    guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+                    guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(request.id)) else { return }
+                    var statusCode = 0
+                    var request = URLRequest(url: url)
+                    request.httpMethod = "PUT"
+                    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                    request.httpBody = jsonData as Data
+                    request.timeoutInterval = 10
+                    let semaphore = DispatchSemaphore(value: 0)
+                    
+                    let session = URLSession.shared
+                    session.dataTask(with: request) { (data, response, error) in
+                        
+                        if let httpResponse = response as? HTTPURLResponse {
+                            print(response)
+                            statusCode = httpResponse.statusCode
+                        }
+                        semaphore.signal()
+                        }.resume()
+                    _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+                    print("Status Code: \(statusCode)")
+                }
+                
+                //Add OK and Cancel button to dialog message
+                dialogMessage.addAction(accept)
+                dialogMessage.addAction(decline)
+                
+                // Present dialog message to user
+                self.present(dialogMessage, animated: true, completion: nil)
             }
-            
-            //Add OK and Cancel button to dialog message
-            dialogMessage.addAction(accept)
-            dialogMessage.addAction(decline)
-            
-            // Present dialog message to user
-            self.present(dialogMessage, animated: true, completion: nil)
-            
         }
     }
     
@@ -948,6 +973,8 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         
         for delivery in unfiltered_deliveries {
+            
+            print("\nDelivery \(delivery.id) - \(delivery.status)")
             
             if delivery.status == "requested" {
                 requests.append(delivery)
