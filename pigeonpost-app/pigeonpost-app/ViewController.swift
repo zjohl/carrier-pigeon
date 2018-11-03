@@ -269,6 +269,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         performSegue(withIdentifier: "homeToLogin", sender: sender)
     }
     
+    // label to display drone status (if its connected>battery%, else>"disconnected")
+    @IBOutlet weak var droneStatusLabel: UILabel!
+    
+    // This function is called when user click Check Drone Status
+    @IBAction func droneStatusButton(_ sender: Any) {
+        droneStatusLabel.text = "Hi!"
+    }
+    
     @IBAction func callDroneButton(_ sender: Any) {
         // check if summoning is already in progress
         var deliveries: [delivery] = []
