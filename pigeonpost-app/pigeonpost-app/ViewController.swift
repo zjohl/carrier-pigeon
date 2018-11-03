@@ -304,7 +304,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         for delivery in deliveries {
             if delivery.status == "in_progress" || delivery.status == "requested" || delivery.status == "accepted" || delivery.status == "confirmed" {
                 if delivery.sender.id == delivery.receiver.id {
-                    message = "Your drone is already on its way! Check its status from the Delivery Tracker."
+                    message = "Your drone is already on its way! Check its status from the Deliveries page."
                     print(message)
                     summon_in_progress = true
                 } else {
@@ -890,17 +890,19 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
     @objc func check_deliveries() {
         get_deliveries() // this function gets all deliveries and store in unfiltered_deliveries
         
-        for request in requests {
+        for delivery in requests {
             
             // confirm this is person on receiving side-> notify them, else, ignore
-            if request.receiver.id == currentUser.id {
+            if delivery.receiver.id == currentUser.id {
+                
+                currentDeliveryId = delivery.id
                 
                 // Declare Alert message
-                let dialogMessage = UIAlertController(title: "New Delivery Request", message: "New delivery request from \(request.sender.firstName). Would you like to accept this delivery?", preferredStyle: .alert)
+                let dialogMessage = UIAlertController(title: "New Delivery Request", message: "New delivery request from \(delivery.sender.firstName). Would you like to accept this delivery?", preferredStyle: .alert)
                 
                 // Create OK button with action handler
                 let accept = UIAlertAction(title: "Accept", style: .default, handler: { (action) -> Void in
-                    currentDeliveryId = request.id
+                    currentDeliveryId = delivery.id
                     if self.timer != nil {
                         self.timer?.invalidate()
                         self.timer = nil
@@ -917,7 +919,7 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                     
                     let dict = ["status" : "cancelled"] as [String : Any]
                     guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
-                    guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(request.id)) else { return }
+                    guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(delivery.id)) else { return }
                     var statusCode = 0
                     var request = URLRequest(url: url)
                     request.httpMethod = "PUT"
@@ -938,7 +940,12 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                     _ = semaphore.wait(timeout: DispatchTime.distantFuture)
                     print("Status Code: \(statusCode)")
                     
-                    self.performSegue(withIdentifier: "deliveriesToHome", sender: self)
+                    //stop the timer
+                    if self.timer != nil {
+                        self.timer?.invalidate()
+                        self.timer = nil
+                    }
+                    self.performSegue(withIdentifier: "deliveriesToStatus", sender: self)
                 }
                 
                 //Add OK and Cancel button to dialog message
@@ -954,6 +961,8 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
             
             // confirm that current user is the sender, notify them that receiver has accepted delivery
             if delivery.sender.id == currentUser.id {
+                
+                currentDeliveryId = delivery.id
                 // Declare Alert message
                 let dialogMessage = UIAlertController(title: "Delivery Accepted", message: "\(delivery.receiver.firstName) has accepted your delivery! Prepare the package and click Launch Drone when the drone is ready for takeoff.", preferredStyle: .alert)
                 
@@ -990,7 +999,12 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                     
                     //TODO: INITIALIZE DRONE MISSION
                     
-                    self.performSegue(withIdentifier: "deliveriesToHome", sender: self)
+                    //stop the timer
+                    if self.timer != nil {
+                        self.timer?.invalidate()
+                        self.timer = nil
+                    }
+                    self.performSegue(withIdentifier: "deliveriesToStatus", sender: self)
                 })
                 
                 //Add OK and Cancel button to dialog message
@@ -1045,6 +1059,7 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                 requests.append(delivery)
                 in_progress.append(delivery)
             } else if delivery.status == "accepted" {
+                currentDeliveryId = delivery.id
                 accepted.append(delivery)
                 in_progress.append(delivery)
             } else if delivery.status == "confirmed" {
@@ -1122,6 +1137,14 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidDisappear(animated)
     }
     
+    @IBAction func statusButton(_ sender: Any) {
+        if self.timer != nil {
+            self.timer?.invalidate()
+            self.timer = nil
+        }
+        currentDeliveryId = in_progress[0].id
+        performSegue(withIdentifier: "deliveriesToStatus", sender: sender)
+    }
     
     @IBAction func backButton(_ sender: Any) {
         if self.timer != nil {
@@ -1271,10 +1294,10 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
         print("Status Code: \(statusCode)")
         
         if statusCode == 200 {
-            let alert = UIAlertController(title: "Request Confirmed", message: "Delivery confirmed! The sender is preparing your package. Check its status on the View Delivery page.", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Request Confirmed", message: "Delivery confirmed! The sender is preparing your package. Check its status on the Delivery Status page.", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
                 (_)in
-                self.performSegue(withIdentifier: "acceptToDeliveries", sender: self)
+                self.performSegue(withIdentifier: "acceptToStatus", sender: self)
             })
             
             alert.addAction(OKAction)
@@ -1310,6 +1333,113 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
             semaphore.signal()
             }.resume()
         _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+    }
+}
+
+// DELIVERY STATUS PAGE
+class DeliveryStatusViewController: UIViewController {
+    
+    
+    @IBOutlet weak var confirm: UIButton!
+    @IBOutlet weak var sender: UILabel!
+    @IBOutlet weak var receiver: UILabel!
+    @IBOutlet weak var status: UILabel!
+    @IBOutlet weak var created_at: UILabel!
+    @IBOutlet weak var updated_at: UILabel!
+    var d = delivery(id: 0, droneId: 0, origin: coordinates(latitude: 0, longitude: 0), destination: coordinates(latitude: 0, longitude: 0), status: "", sender: contact(firstName: "", lastName: "", id: 0), receiver: contact(firstName: "", lastName: "", id: 0), createdDate: "", updatedDate: "")
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(true)
+        
+        print("\n\n\nCURRENT DELIVERY ID: \(currentDeliveryId) \n\n\n")
+        
+        confirm.isEnabled = false
+        confirm.addTarget(self, action: #selector(DeliveryStatusViewController.buttonAction(_:)), for: .touchUpInside)
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(currentDeliveryId)) else { return }
+        
+        let session = URLSession.shared
+        session.dataTask(with: url) { (data, response, error) in
+            guard let data = data else { return }
+            print(data)
+            do {
+                let result = try JSONDecoder().decode(delivery.self, from: data)
+                print("Result: \(result)")
+                self.d = result
+                
+            } catch {
+                print(error)
+            }
+            
+            semaphore.signal()
+            }.resume()
+        
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        
+        self.sender.text = d.sender.firstName + " " + d.sender.lastName
+        self.receiver.text = d.receiver.firstName + " " + d.receiver.lastName
+        self.created_at.text = d.createdDate
+        self.updated_at.text = d.updatedDate
+        
+        if d.status == "requested" {
+            self.status.text = "Waiting on receiver to accept the request."
+        } else if d.status == "accepted" {
+            self.status.text = "Request accepted by receiver. Sender is preparing package."
+        } else if d.status == "in_progress" {
+            
+            // enable the confirm button if a delivery is in progress and the active user is the receiver
+            if d.receiver.id == currentUser.id {
+                self.confirm.isEnabled = true
+            }
+            
+            self.status.text = "Drone en route"
+        } else {
+            self.status.text = d.status
+        }
+    }
+    
+    @IBAction func backButton(_ sender: Any) {
+        self.performSegue(withIdentifier: "statusToDeliveries", sender: self)
+    }
+    
+    @objc func buttonAction(_ sender:UIButton!) {
+        let dict = ["status" : "completed"] as [String : Any]
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(currentDeliveryId)) else { return }
+        var statusCode = 0
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData as Data
+        request.timeoutInterval = 10
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print(response)
+                statusCode = httpResponse.statusCode
+            }
+            semaphore.signal()
+            }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        print("Status Code: \(statusCode)")
+        viewWillAppear(true)
     }
     
 }
