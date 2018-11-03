@@ -11,6 +11,7 @@ import DJISDK
 import Foundation
 
 var currentUser = user(firstName: "", lastName: "", email: "", id: 0, password: "")
+var currentDeliveryId = 0
 
 //STRUCTS: based off yaml
 struct drone: Decodable {
@@ -857,24 +858,25 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
 // DELIVERIES PAGE
 class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
+    var timer : Timer?
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         get_deliveries()
-        // start timer to make GET deliveries request every 5 seconds
+        // start timer to make GET deliveries request every 2 seconds
         newBackgroundTimer()
     }
     
     func newBackgroundTimer() -> Void {
         DispatchQueue.global(qos: .background).async {
             
-            // timer calls function check_deliveries every 5 seconds
+            // timer calls function check_deliveries every 2 seconds
             // this function checks for new delivery requests
-            let timer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(self.check_deliveries), userInfo: nil, repeats: true)
+            self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.check_deliveries), userInfo: nil, repeats: true)
             let runLoop = RunLoop.current
-            runLoop.add(timer, forMode: .defaultRunLoopMode)
+            runLoop.add(self.timer!, forMode: .defaultRunLoopMode)
             runLoop.run()
         }
     }
@@ -884,18 +886,26 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // this function GETs all deliveries for the user and checks for new delivery requests
     // if there's a new delivery request found, user is notified
+    
     @objc func check_deliveries() {
         get_deliveries() // this function gets all deliveries and store in unfiltered_deliveries
         
         for request in requests {
             
             if request.receiver.id == currentUser.id {
+                
+                
                 // Declare Alert message
                 let dialogMessage = UIAlertController(title: "New Delivery Request", message: "New delivery request from \(request.sender.firstName). Would you like to accept this delivery?", preferredStyle: .alert)
                 
                 // Create OK button with action handler
                 let accept = UIAlertAction(title: "Accept", style: .default, handler: { (action) -> Void in
-                    
+                    currentDeliveryId = request.id
+                    if self.timer != nil {
+                        self.timer?.invalidate()
+                        self.timer = nil
+                    }
+                    self.performSegue(withIdentifier: "deliveriesToAccept", sender: self)
                     print("Accept button tapped")
                     
                 })
@@ -927,6 +937,8 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                         }.resume()
                     _ = semaphore.wait(timeout: DispatchTime.distantFuture)
                     print("Status Code: \(statusCode)")
+                    
+                    self.performSegue(withIdentifier: "deliveriesToHome", sender: self)
                 }
                 
                 //Add OK and Cancel button to dialog message
@@ -987,14 +999,6 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                 in_progress.append(delivery)
             } else if delivery.status == "in_progress" {
                 in_progress.append(delivery)
-                
-                // check if it's a summon to determine what to display
-                if delivery.sender.id == delivery.receiver.id {
-                    in_progress_display.append("Call drone request in progress")
-                } else {
-                    in_progress_display.append("In progress: " + delivery.sender.firstName + " >> " + delivery.receiver.firstName)
-                }
-                
             } else {
                 done.append(delivery)
                 
@@ -1004,6 +1008,15 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                 } else {
                     done_display.append("Delivery " + delivery.status + ": " + delivery.sender.firstName + ">" + delivery.receiver.firstName)
                 }
+            }
+        }
+        
+        for delivery in in_progress {
+            // check if it's a summon to determine what to display
+            if delivery.sender.id == delivery.receiver.id {
+                in_progress_display.append("Call drone request in progress")
+            } else {
+                in_progress_display.append("In progress: " + delivery.sender.firstName + " >> " + delivery.receiver.firstName)
             }
         }
         
@@ -1058,6 +1071,192 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     
     @IBAction func backButton(_ sender: Any) {
+        if self.timer != nil {
+            self.timer?.invalidate()
+            self.timer = nil
+        }
         performSegue(withIdentifier: "deliveriesToHome", sender: sender)
     }
+}
+
+
+// ACCEPT DELIVERY PAGE
+class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, DJISDKManagerDelegate {
+    
+    @IBOutlet weak var map: MKMapView!
+    @IBOutlet weak var pickerView: UIPickerView!
+    
+    // Code for waypoints in picker view-------------------------------------
+    let waypoint1 = MKPointAnnotation()
+    let waypoint2 = MKPointAnnotation()
+    let waypoint3 = MKPointAnnotation()
+    let waypoints = ["Waypoint 1","Waypoint 2","Waypoint 3"]
+    let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 42.340646, longitude: -71.097516), span: MKCoordinateSpanMake(0.02, 0.02))
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return waypoints.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return waypoints[row]
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        DJISDKManager.registerApp(with: self)
+    }
+    //----------------------------------------------------------
+    
+    // DJISDKManagerDelegate Methods
+    func productConnected(_ product: DJIBaseProduct?) {
+        if let _ = product {
+            print("Result True: let _ = product")
+            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
+                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
+                print("Initializing flight controller...")
+                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
+                flightController.delegate = (self as! DJIFlightControllerDelegate)
+            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
+        } else { print("Result False: let _ = product")}
+    }
+    func productDisconnected() {
+        NSLog("Product Disconnected")
+    }
+    
+    func appRegisteredWithError(_ error: Error?) {
+        
+        if (error != nil) {
+            print("Register App Failed!")
+        } else {
+            print("Register App Succeeded! Starting connection to product...")
+            DJISDKManager.startConnectionToProduct()
+        }
+    }
+    //----------------------------------------------------------
+    func showAlertViewWithTitle(title: String, withMessage message: String) {
+        
+        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction.init(title:"OK", style: UIAlertActionStyle.default, handler: nil)
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    //Initialization ----------------------------------------------------------
+    override func viewWillAppear(_ animated: Bool) {
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        waypoint1.coordinate = CLLocationCoordinate2D(latitude: 42.339932, longitude: -71.098401)
+        waypoint1.title = "Waypoint 1"
+        map.addAnnotation(waypoint1)
+        
+        waypoint2.coordinate = CLLocationCoordinate2D(latitude: 42.341305, longitude: -71.096638)
+        waypoint2.title = "Waypoint 2"
+        map.addAnnotation(waypoint2)
+        
+        waypoint3.coordinate = CLLocationCoordinate2D(latitude: 42.340646, longitude: -71.097516)
+        waypoint3.title = "Waypoint 3"
+        map.addAnnotation(waypoint3)
+        
+        map.setRegion(region, animated: true)
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        DJISDKManager.registerApp(with: self)
+    }
+    //----------------------------------------------------------
+    
+    @IBAction func confirmButton(_ sender: Any) {
+        var lat: Float = 0
+        var long: Float = 0
+        
+        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 1" {
+            lat = 42.339932
+            long = -71.098401
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 2" {
+            lat = 42.341305
+            long = -71.096638
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 3" {
+            lat = 42.340646
+            long = -71.097516
+        }
+        
+        let dest_waypoint = DJIWaypoint(coordinate: CLLocationCoordinate2D(latitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(long)))
+        
+        let dict = ["status" : "accepted",  "destination" : ["latitude" : lat, "longitude" : long]] as [String : Any]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(currentDeliveryId)) else { return }
+        var statusCode = 0
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData as Data
+        request.timeoutInterval = 10
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                print(response)
+                statusCode = httpResponse.statusCode
+            }
+            semaphore.signal()
+            }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+        
+        print("Status Code: \(statusCode)")
+        
+        if statusCode == 200 {
+            let alert = UIAlertController(title: "Request Confirmed", message: "Delivery confirmed! The sender is preparing your package.", preferredStyle: .alert)
+            let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
+                (_)in
+                self.performSegue(withIdentifier: "acceptToDeliveries", sender: self)
+            })
+            
+            alert.addAction(OKAction)
+            self.present(alert, animated: true, completion: nil)
+        }
+        else {
+            self.showAlertViewWithTitle(title:"Delivery Error", withMessage: "An unexpected error occurred. Please try again later.")
+        }
+    }
+    
+    @IBAction func backButton(_ sender: Any) {
+        //cancel the delivery
+        print("Decline button tapped")
+
+        let dict = ["status" : "cancelled"] as [String : Any]
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/deliveries/" + String(currentDeliveryId)) else { return }
+        var statusCode = 0
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData as Data
+        request.timeoutInterval = 10
+        let semaphore = DispatchSemaphore(value: 0)
+
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print(response)
+                statusCode = httpResponse.statusCode
+            }
+            semaphore.signal()
+            }.resume()
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
+    }
+    
 }
