@@ -203,9 +203,22 @@ class ViewController: UIViewController {
                 }catch { print(error) }
             }
         }.resume()
-        self.showAlertViewWithTitle(title:"Account Created!", withMessage: "Your account has been created. Please go back to login for the first time.")
+            
+            let dialogMessage = UIAlertController(title: "Account Created!", message: "Your account has been created!", preferredStyle: .alert)
+            
+            // Create OK button with action handler
+            let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
+                self.performSegue(withIdentifier: "signUpToLogin", sender: self)
+            })
+            
+            //Add OK and Cancel button to dialog message
+            dialogMessage.addAction(ok)
+            
+            // Present dialog message to user
+            self.present(dialogMessage, animated: true, completion: nil)
             
         }
+        
     }
     
     func showAlertViewWithTitle(title: String, withMessage message: String) {
