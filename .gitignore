@@ -4,6 +4,7 @@
 # or operating system, you probably want to add a global ignore instead:
 #   git config --global core.excludesfile '~/.gitignore_global'
 
+pigeonpost-app/Pods/.DS_Store
 pigeonpost-app/Pods/Pods.xcodeproj
 pigeonpost-app/pigeonpost-app.xcodeproj
 pigeonpost-app.xcworkspace

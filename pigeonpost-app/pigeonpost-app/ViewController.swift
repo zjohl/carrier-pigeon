@@ -287,7 +287,17 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     // This function is called when user click Check Drone Status
     @IBAction func droneStatusButton(_ sender: Any) {
-        droneStatusLabel.text = "Hi!"
+        let batteryLevelKey = DJIBatteryKey(param: DJIBatteryParamChargeRemainingInPercent)
+        DJISDKManager.keyManager()?.getValueFor(batteryLevelKey!, withCompletion: { [unowned self] (value: DJIKeyedValue?, error: Error?) in
+            guard error == nil && value != nil else {
+                // Insert graceful error handling here
+                
+                self.droneStatusLabel.text = "Error";
+                return
+            }
+            // DJIBatteryParamChargeRemainingInPercent is associated with a uint8_t value
+            self.droneStatusLabel.text = "success"//"\(value!.unsignedIntegerValue) %"
+        })
     }
     
     @IBAction func callDroneButton(_ sender: Any) {
