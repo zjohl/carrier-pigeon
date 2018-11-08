@@ -240,25 +240,25 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        DJISDKManager.registerApp(with: self)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        DJISDKManager.registerApp(with: self)
     }
     //----------------------------------------------------------
     
     // DJISDKManagerDelegate Methods
     func productConnected(_ product: DJIBaseProduct?) {
-        if let _ = product {
-            print("Result True: let _ = product")
-            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
-                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
-                print("Initializing flight controller...")
-                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
-                flightController.delegate = (self as! DJIFlightControllerDelegate)
-            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
-        } else { print("Result False: let _ = product")}
+//        if let _ = product {
+//            print("Result True: let _ = product")
+//            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
+//                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
+//                print("Initializing flight controller...")
+//                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
+//                flightController.delegate = (self as! DJIFlightControllerDelegate)
+//            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
+//        } else { print("Result False: let _ = product")}
     }
     func productDisconnected() {
         NSLog("Product Disconnected")
@@ -296,7 +296,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 return
             }
             // DJIBatteryParamChargeRemainingInPercent is associated with a uint8_t value
-            self.droneStatusLabel.text = "success"//"\(value!.unsignedIntegerValue) %"
+            self.droneStatusLabel.text = "\(value!.unsignedIntegerValue) %"
         })
     }
     
@@ -654,7 +654,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        DJISDKManager.registerApp(with: self)
+        //DJISDKManager.registerApp(with: self)
     }
     //----------------------------------------------------------
     
@@ -749,7 +749,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        DJISDKManager.registerApp(with: self)
+        //DJISDKManager.registerApp(with: self)
     }
     //----------------------------------------------------------
     
@@ -1245,7 +1245,7 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        DJISDKManager.registerApp(with: self)
+       // DJISDKManager.registerApp(with: self)
     }
     //----------------------------------------------------------
     
@@ -1309,7 +1309,7 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        DJISDKManager.registerApp(with: self)
+       // DJISDKManager.registerApp(with: self)
     }
     //----------------------------------------------------------
     
