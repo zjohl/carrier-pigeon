@@ -564,13 +564,6 @@
                                 <color key="textColor" red="1" green="0.49327188729999999" blue="0.47399842739999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RtT-fK-VsD">
-                                <rect key="frame" x="16" y="583" width="302" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QWz-hB-0jr">
                                 <rect key="frame" x="16" y="568" width="343" height="99"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -584,7 +577,6 @@
                     </view>
                     <connections>
                         <outlet property="callCancel" destination="hDi-1b-Gan" id="JMf-Hj-juc"/>
-                        <outlet property="label1" destination="RtT-fK-VsD" id="uDx-An-vPw"/>
                         <outlet property="label2" destination="QWz-hB-0jr" id="NVO-cf-UvU"/>
                         <outlet property="map" destination="d9N-GP-LrE" id="9hK-CN-dvM"/>
                         <outlet property="pickerView" destination="jyx-fr-IQX" id="ISC-EQ-erG"/>
@@ -723,7 +715,7 @@
         <image name="icon 3" width="612" height="792"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="3SH-Pr-fxE"/>
+        <segue reference="V8x-Pz-3Q9"/>
         <segue reference="1dD-F2-wEl"/>
         <segue reference="IWR-9b-lb1"/>
         <segue reference="vOC-eN-Ifa"/>

@@ -889,8 +889,8 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         // Add the waypoints to a mission
         var djiMission = DJIMutableWaypointMission()
-        //            djiMission.add(originWayPoint)
-        //            djiMission.add(destinationWayPoint)
+        djiMission.add(waypoint1)
+        djiMission.add(waypoint2)
         
         // 4. Configure the mission
         djiMission.finishedAction = DJIWaypointMissionFinishedAction.noAction
