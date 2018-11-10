@@ -268,8 +268,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if (error != nil) {
             print("Register App Failed!")
+            self.showAlertViewWithTitle(title:"Register Error", withMessage: "Register App Failed!")
         } else {
             print("Register App Succeeded! Starting connection to product...")
+            self.showAlertViewWithTitle(title:"Register App Successful", withMessage: "Register App Succeeded! Starting connection to product...")
             DJISDKManager.startConnectionToProduct()
         }
     }
