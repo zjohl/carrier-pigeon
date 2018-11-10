@@ -628,17 +628,21 @@ class ContactsViewController: UIViewController, UITableViewDelegate, UITableView
 
 // CALL DRONE PAGE
 class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, DJISDKManagerDelegate {
+    @IBOutlet weak var label1: UILabel!
     
     @IBOutlet weak var pickerView: UIPickerView!
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var statusLabel: UILabel!
     
    // Code for waypoints in picker view-------------------------------------
+    // Stony Brook  42.3165, -71.1045
     let waypoint1 = MKPointAnnotation()
     let waypoint2 = MKPointAnnotation()
     let waypoint3 = MKPointAnnotation()
-    let waypoints = ["Waypoint 1","Waypoint 2","Waypoint 3"]
-    let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 42.340646, longitude: -71.097516), span: MKCoordinateSpanMake(0.02, 0.02))
+    let waypoint4 = MKPointAnnotation()
+    let waypoints = ["Stony Brook - NW Corner","Stony Brook - SE Corner","Stony Brook - NE Corner", "Stony Brook - SW Corner"]
+    
+    let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 42.3165, longitude: -71.1045), span: MKCoordinateSpanMake(0.001, 0.001))
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -654,21 +658,21 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //DJISDKManager.registerApp(with: self)
+        DJISDKManager.registerApp(with: self)
     }
     //----------------------------------------------------------
     
     // DJISDKManagerDelegate Methods
     func productConnected(_ product: DJIBaseProduct?) {
-        if let _ = product {
-            print("Result True: let _ = product")
-            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
-                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
-                print("Initializing flight controller...")
-                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
-                flightController.delegate = (self as! DJIFlightControllerDelegate)
-            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
-        } else { print("Result False: let _ = product")}
+//        if let _ = product {
+//            print("Result True: let _ = product")
+//            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
+//                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
+//                print("Initializing flight controller...")
+//                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
+//                flightController.delegate = (self as! DJIFlightControllerDelegate)
+//            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
+//        } else { print("Result False: let _ = product")}
     }
     func productDisconnected() {
         NSLog("Product Disconnected")
@@ -727,17 +731,25 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         pickerView.delegate = self
         pickerView.dataSource = self
-        waypoint1.coordinate = CLLocationCoordinate2D(latitude: 42.339932, longitude: -71.098401)
-        waypoint1.title = "Waypoint 1"
+        //NW corner 42.31687, -71.104768
+        waypoint1.coordinate = CLLocationCoordinate2D(latitude: 42.31687, longitude: -71.104768)
+        waypoint1.title = "Stony Brook - NW Corner"
         map.addAnnotation(waypoint1)
         
-        waypoint2.coordinate = CLLocationCoordinate2D(latitude: 42.341305, longitude: -71.096638)
-        waypoint2.title = "Waypoint 2"
+        //SE corner 42.31644, -71.10438
+        waypoint2.coordinate = CLLocationCoordinate2D(latitude: 42.31644, longitude: -71.10438)
+        waypoint2.title = "Stony Brook - SE Corner"
         map.addAnnotation(waypoint2)
         
-        waypoint3.coordinate = CLLocationCoordinate2D(latitude: 42.340646, longitude: -71.097516)
-        waypoint3.title = "Waypoint 3"
+        //NE corner 42.31685, -71.1042
+        waypoint3.coordinate = CLLocationCoordinate2D(latitude: 42.31685, longitude: -71.1042)
+        waypoint3.title = "Stony Brook - NE Corner"
         map.addAnnotation(waypoint3)
+        
+        //SW corner  42.3165, -71.10475
+        waypoint4.coordinate = CLLocationCoordinate2D(latitude: 42.3165, longitude: -71.10475)
+        waypoint4.title = "Stony Brook - SW Corner"
+        map.addAnnotation(waypoint4)
         
         map.setRegion(region, animated: true)
     }
@@ -767,15 +779,18 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         var lat: Float = 0
         var long: Float = 0
         
-        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 1" {
-            lat = 42.339932
-            long = -71.098401
-        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 2" {
-            lat = 42.341305
-            long = -71.096638
-        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Waypoint 3" {
-            lat = 42.340646
-            long = -71.097516
+        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NW Corner" {
+            lat = 42.31687
+            long = -71.104768
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SE Corner" {
+            lat = 42.31644
+            long = -71.10438
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NE Corner" {
+            lat = 42.31685
+            long = -71.1042
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SW Corner" {
+            lat = 42.3165
+            long = -71.10475
         }
         
         let dest_waypoint = DJIWaypoint(coordinate: CLLocationCoordinate2D(latitude: CLLocationDegrees(lat), longitude: CLLocationDegrees(long)))
@@ -784,18 +799,18 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         print("Drone Location Key: \(droneLocationKey)")
         
         // This isn't working?? Probably because nothing is connected
-//        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
-//            testLabel.text = "drone location value failed"
-//            return
-//        }
-//        print("Drone Location Value: \(droneLocationValue)")
-//        testLabel.text = "drone location value found"
-        //let droneLocation = droneLocationValue.value as! CLLocation
-        //let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
+        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
+            label1.text = "drone location value failed"
+            return
+        }
+        print("Drone Location Value: \(droneLocationValue)")
+        label1.text = "drone location value found"
+        let droneLocation = droneLocationValue.value as! CLLocation
+        let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
-        // Once the above works, use this dict to reference drone location. for now testing with dummy data
-        //        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : Int(droneLocation.coordinate.latitude), "longitude" : Int(droneLocation.coordinate.longitude)], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
-        let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+         //Once the above works, use this dict to reference drone location. for now testing with dummy data
+                let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : Int(droneLocation.coordinate.latitude), "longitude" : Int(droneLocation.coordinate.longitude)], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        //let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
         
