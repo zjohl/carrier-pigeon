@@ -298,7 +298,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 return
             }
             // DJIBatteryParamChargeRemainingInPercent is associated with a uint8_t value
-            self.droneStatusLabel.text = "success" //"\(value!.unsignedIntegerValue) %"
+            self.droneStatusLabel.text = "\(value!.unsignedIntegerValue) %"
         })
     }
     
@@ -684,8 +684,10 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         if (error != nil) {
             print("Register App Failed!")
+            self.showAlertViewWithTitle(title:"Register Error", withMessage: "Register App Failed!")
         } else {
             print("Register App Succeeded! Starting connection to product...")
+            self.showAlertViewWithTitle(title:"Register App Successful", withMessage: "Register App Succeeded! Starting connection to product...")
             DJISDKManager.startConnectionToProduct()
         }
     }
@@ -1279,7 +1281,7 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       // DJISDKManager.registerApp(with: self)
+        DJISDKManager.registerApp(with: self)
     }
     //----------------------------------------------------------
     
@@ -1303,8 +1305,10 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
         
         if (error != nil) {
             print("Register App Failed!")
+            self.showAlertViewWithTitle(title:"Register Error", withMessage: "Register App Failed!")
         } else {
             print("Register App Succeeded! Starting connection to product...")
+            self.showAlertViewWithTitle(title:"Register App Successful", withMessage: "Register App Succeeded! Starting connection to product...")
             DJISDKManager.startConnectionToProduct()
         }
     }
