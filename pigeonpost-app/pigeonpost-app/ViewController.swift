@@ -828,7 +828,7 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
 //        let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
          //Once the above works, use this dict to reference drone location. for now testing with dummy data
-        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : waypoint1_latitude, "longitude" : waypoint1_longitude], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : waypoint1_latitude, "longitude" : waypoint1_longitude], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         //let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
