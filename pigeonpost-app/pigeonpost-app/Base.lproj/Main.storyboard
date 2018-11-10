@@ -571,6 +571,13 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QWz-hB-0jr">
+                                <rect key="frame" x="16" y="635" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="BzE-uE-gMs"/>
@@ -578,6 +585,7 @@
                     <connections>
                         <outlet property="callCancel" destination="hDi-1b-Gan" id="JMf-Hj-juc"/>
                         <outlet property="label1" destination="RtT-fK-VsD" id="uDx-An-vPw"/>
+                        <outlet property="label2" destination="QWz-hB-0jr" id="NVO-cf-UvU"/>
                         <outlet property="map" destination="d9N-GP-LrE" id="9hK-CN-dvM"/>
                         <outlet property="pickerView" destination="jyx-fr-IQX" id="ISC-EQ-erG"/>
                         <outlet property="statusLabel" destination="RWh-LY-iSH" id="ZVq-vL-PXD"/>
