@@ -630,7 +630,6 @@ class ContactsViewController: UIViewController, UITableViewDelegate, UITableView
 
 // CALL DRONE PAGE
 class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, DJISDKManagerDelegate {
-    @IBOutlet weak var label1: UILabel!
     
     @IBOutlet weak var pickerView: UIPickerView!
     @IBOutlet weak var map: MKMapView!
@@ -860,14 +859,14 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             
             initializeMission()
             
-            let alert = UIAlertController(title: "Request Confirmed", message: "The drone is on its way!", preferredStyle: .alert)
-            let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
-                (_)in
-                self.performSegue(withIdentifier: "callDroneToHome", sender: self)
-            })
-            
-            alert.addAction(OKAction)
-            self.present(alert, animated: true, completion: nil)
+//            let alert = UIAlertController(title: "Request Confirmed", message: "The drone is on its way!", preferredStyle: .alert)
+//            let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
+//                (_)in
+//                self.performSegue(withIdentifier: "callDroneToHome", sender: self)
+//            })
+//
+//            alert.addAction(OKAction)
+//            self.present(alert, animated: true, completion: nil)
    
         } else {
             self.showAlertViewWithTitle(title:"Request Failed", withMessage: "An unexpected error occurred. Please try again later.")
