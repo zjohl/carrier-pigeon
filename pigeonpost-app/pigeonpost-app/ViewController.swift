@@ -296,7 +296,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 return
             }
             // DJIBatteryParamChargeRemainingInPercent is associated with a uint8_t value
-            self.droneStatusLabel.text = "\(value!.unsignedIntegerValue) %"
+            self.droneStatusLabel.text = "success" //"\(value!.unsignedIntegerValue) %"
         })
     }
     
