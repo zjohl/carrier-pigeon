@@ -684,10 +684,8 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         if (error != nil) {
             print("Register App Failed!")
-            self.showAlertViewWithTitle(title:"Register Error", withMessage: "Register App Failed!")
         } else {
             print("Register App Succeeded! Starting connection to product...")
-            self.showAlertViewWithTitle(title:"Register App Successful", withMessage: "Register App Succeeded! Starting connection to product...")
             DJISDKManager.startConnectionToProduct()
         }
     }
@@ -803,18 +801,18 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         print("Drone Location Key: \(droneLocationKey)")
         
         // This isn't working?? Probably because nothing is connected
-//        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
-//            label1.text = "drone location value failed"
-//            return
-//        }
-//        print("Drone Location Value: \(droneLocationValue)")
-//        label1.text = "drone location value found"
-//        let droneLocation = droneLocationValue.value as! CLLocation
-//        let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
+        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
+            label1.text = "drone location value failed"
+            return
+        }
+        print("Drone Location Value: \(droneLocationValue)")
+        label1.text = "drone location value found"
+        let droneLocation = droneLocationValue.value as! CLLocation
+        let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
          //Once the above works, use this dict to reference drone location. for now testing with dummy data
-                //let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : Int(droneLocation.coordinate.latitude), "longitude" : Int(droneLocation.coordinate.longitude)], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
-        let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        let dict = ["drone_id" : 0, "status" : "pending", "origin": ["latitude" : Int(droneLocation.coordinate.latitude), "longitude" : Int(droneLocation.coordinate.longitude)], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        //let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
         
@@ -1305,10 +1303,8 @@ class AcceptDeliveryViewController: UIViewController, UIPickerViewDelegate, UIPi
         
         if (error != nil) {
             print("Register App Failed!")
-            self.showAlertViewWithTitle(title:"Register Error", withMessage: "Register App Failed!")
         } else {
             print("Register App Succeeded! Starting connection to product...")
-            self.showAlertViewWithTitle(title:"Register App Successful", withMessage: "Register App Succeeded! Starting connection to product...")
             DJISDKManager.startConnectionToProduct()
         }
     }
