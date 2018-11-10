@@ -42,7 +42,7 @@
                                     <action selector="signUpButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mGV-gc-Wbb"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3BY-ME-N7b">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3BY-ME-N7b">
                                 <rect key="frame" x="16" y="309" width="343" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -715,7 +715,7 @@
         <image name="icon 3" width="612" height="792"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Rex-IM-z4k"/>
+        <segue reference="3SH-Pr-fxE"/>
         <segue reference="1dD-F2-wEl"/>
         <segue reference="IWR-9b-lb1"/>
         <segue reference="vOC-eN-Ifa"/>
