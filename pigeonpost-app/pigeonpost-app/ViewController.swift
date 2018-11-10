@@ -800,16 +800,27 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         guard let droneLocationKey = DJIFlightControllerKey(param: DJIFlightControllerParamAircraftLocation) else { return }
         print("Drone Location Key: \(droneLocationKey)")
-        label2.text = "Drone Location Key: \(droneLocationKey)"
         
+        guard let keyManager = DJISDKManager.keyManager() else {
+            label2.text = "Couldn't get the keyManager"
+            return
+        }
+        label2.text = "Key Manager: \(keyManager)"
+//        guard let droneLocationValue = keyManager.getValueFor(droneLocationKey) {
+//            let location = droneLocationValue.value as! CLLocation
+//            label1.text = "success"
+//        } else {
+//            label1.text = "drone location value failed"
+//        }
         
         // This isn't working?? Probably because nothing is connected
-        guard let droneLocationValue = DJISDKManager.keyManager()?.getValueFor(droneLocationKey) else {
+        guard let droneLocationValue = keyManager.getValueFor(droneLocationKey) else {
             label1.text = "drone location value failed"
             return
         }
         print("Drone Location Value: \(droneLocationValue)")
-        label1.text = "drone location value found"
+        label1.text = "Drone Location Value: \(droneLocationValue)"
+        
         let droneLocation = droneLocationValue.value as! CLLocation
         let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
