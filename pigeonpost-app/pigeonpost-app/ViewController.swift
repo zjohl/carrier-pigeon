@@ -888,10 +888,12 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         let waypoint2 = DJIWaypoint.init(coordinate: coordinate2)
         
         // Add the waypoints to a mission
+        label2.text = label2.text ?? "" + " " + "adding waypoints"
         var djiMission = DJIMutableWaypointMission()
         djiMission.add(waypoint1)
         djiMission.add(waypoint2)
         
+        label2.text = label2.text ?? "" + " " + "4."
         // 4. Configure the mission
         djiMission.finishedAction = DJIWaypointMissionFinishedAction.noAction
         djiMission.autoFlightSpeed = 2
@@ -899,11 +901,13 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         djiMission.headingMode = .auto
         djiMission.flightPathMode = .normal
         
+        label2.text = label2.text ?? "" + " " + "5."
         // 5. Validate our mission
         if let error = djiMission.checkParameters() {
-            label2.text = "Waypoint Mission parameters are invalid: \(error.localizedDescription)"
+            label2.text = label2.text ?? "" + " " + "Waypoint Mission parameters are invalid: \(error.localizedDescription)"
             return
         }
+        label2.text = label2.text ?? "" + " " + "validated mission"
         
         // We need to get the mission operator from mission control
         // Not really sure about this syntax
@@ -911,33 +915,39 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         if(missionControl == nil) {
             label2.text = label2.text ?? "" + " " + "Invalid mission control"
         }
+        label2.text = label2.text ?? "" + " " + "valid mission control"
         
         let waypointMissionOperator = missionControl!.waypointMissionOperator()
         
+        label2.text = label2.text ?? "" + " " + "6."
         // 6.
         if let error = waypointMissionOperator.load(djiMission) {
             label2.text = label2.text ?? "" + " " + error.localizedDescription
         }
+        label2.text = label2.text ?? "" + " " + "load(djiMission)"
         
+        label2.text = label2.text ?? "" + " " + "7."
         // 7.
         waypointMissionOperator.addListener(toUploadEvent: self, with: DispatchQueue.main) { error in
             self.label2.text = self.label2.text ?? "" + " " + "Upload"
             if error.currentState.rawValue == 5 {
-                //                    self.state = .flying
-                //                    self.startMission()
+                //self.state = .flying
+                //self.startMission()
             }
         }
         
+        label2.text = label2.text ?? "" + " " + "8."
         // 8.
         waypointMissionOperator.uploadMission() { error in
             if let error = error {
                 self.label2.text = self.label2.text ?? "" + " " + "upload error: " + error.localizedDescription
             } else {
                 self.label2.text = self.label2.text ?? "" + " " + "Upload finished"
-                //                    self.state = .flying
+                //self.state = .flying
             }
         }
         
+        label2.text = label2.text ?? "" + " " + "9."
         // 9.
         waypointMissionOperator.startMission(completion: { error in
             if let error = error {
