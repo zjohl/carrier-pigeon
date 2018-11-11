@@ -940,50 +940,53 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         }
         label2.text = "valid mission control"
         
-//        let error0 = missionControl!.scheduleElement(DJITakeOffAction())
-//        if error0 != nil {
-//            label2.text = "Error scheduling element \(String(describing: error0))"
-//            return;
-//        }
-//        //missionControl!.scheduleElement(DJIWaypointMission(mission: djiMission))
-//        let error = DJISDKManager.missionControl()?.scheduleElement(DJIWaypointMission(mission: djiMission))
+        let error0 = DJISDKManager.missionControl()?.scheduleElement(DJITakeOffAction())
+        if error0 != nil {
+            label2.text = "Error scheduling element \(String(describing: error0))"
+        }
+        
+        let error1 = DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(altitude: 60)!)
+        if error1 != nil {
+            label2.text = "Error scheduling element \(String(describing: error0))"
+        }
+  
+        let error = DJISDKManager.missionControl()?.scheduleElement(DJIWaypointMission(mission: djiMission))
+
+        if error != nil {
+            label2.text = "Error scheduling element \(String(describing: error))"
+        }
+        DJISDKManager.missionControl()?.startTimeline()
+        
+        label2.text = "Is it running? \(String(describing: DJISDKManager.missionControl()?.isTimelineRunning))" + "\nRunning element \(DJISDKManager.missionControl()?.runningElement)"
+        
+//        let waypointMissionOperator = missionControl!.waypointMissionOperator()
 //
-//        if error != nil {
-//            label2.text = "Error scheduling element \(String(describing: error))"
-//            return;
+//        // 6.
+//        if let error = waypointMissionOperator.load(DJIWaypointMission(mission: djiMission)) {
+//            label2.text = "Waypoint mission operator load failed " + error.localizedDescription
 //        }
-//        missionControl!.startTimeline()
-        
-       // label2.text = "Is it running? \(String(describing: missionControl?.isTimelineRunning))" + "\nRunning element \(missionControl?.runningElement)"
-        
-        let waypointMissionOperator = missionControl!.waypointMissionOperator()
-
-        // 6.
-        if let error = waypointMissionOperator.load(DJIWaypointMission(mission: djiMission)) {
-            label2.text = "Waypoint mission operator load failed " + error.localizedDescription
-        }
-        label2.text = "loaded"
-
-        // 7.
-        waypointMissionOperator.addListener(toUploadEvent: self, with: DispatchQueue.main) { error in
-            self.label2.text = "Upload"
-            if error.currentState.rawValue == 5 {
-                // start mission
-                waypointMissionOperator.startMission(completion: { error in
-                    if let error = error {
-                        self.label2.text = "Error starting mission" + error.localizedDescription
-                    }
-                    self.label2.text = "Mission started successfully"
-                })
-            }
-        }
-
-        // 8.
-        waypointMissionOperator.uploadMission() { error in
-            if let error = error {
-                self.label2.text = "Upload error: " + error.localizedDescription
-            }
-        }
+//        label2.text = "loaded"
+//
+//        // 7.
+//        waypointMissionOperator.addListener(toUploadEvent: self, with: DispatchQueue.main) { error in
+//            self.label2.text = "Upload"
+//            if error.currentState.rawValue == 5 {
+//                // start mission
+//                waypointMissionOperator.startMission(completion: { error in
+//                    if let error = error {
+//                        self.label2.text = "Error starting mission" + error.localizedDescription
+//                    }
+//                    self.label2.text = "Mission started successfully"
+//                })
+//            }
+//        }
+//
+//        // 8.
+//        waypointMissionOperator.uploadMission() { error in
+//            if let error = error {
+//                self.label2.text = "Upload error: " + error.localizedDescription
+//            }
+//        }
         
     }
 }
