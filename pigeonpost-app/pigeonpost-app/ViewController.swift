@@ -883,6 +883,11 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
                 label2.text = "Error scheduling element \(String(describing: error))"
             }
             
+            let error2 = DJISDKManager.missionControl()?.scheduleElement(DJILandAction())
+            if error2 != nil {
+                label2.text = "Error scheduling element \(String(describing: error2))"
+            }
+            
             DJISDKManager.missionControl()?.startTimeline()
             
             label2.text = "Is it running? \(String(describing: DJISDKManager.missionControl()?.isTimelineRunning))" + "\nRunning element \(DJISDKManager.missionControl()?.runningElement)"
@@ -1088,6 +1093,7 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                     DJISDKManager.missionControl()?.scheduleElement(DJITakeOffAction())
                     DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(altitude: 20)!)
                     DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(coordinate: coordinate, altitude: 20)!)
+                    DJISDKManager.missionControl()?.scheduleElement(DJILandAction())
                     DJISDKManager.missionControl()?.startTimeline()
                     
                     //stop the timer
