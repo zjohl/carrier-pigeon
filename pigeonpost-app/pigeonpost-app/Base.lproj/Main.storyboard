@@ -546,17 +546,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <pickerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jyx-fr-IQX">
-                                <rect key="frame" x="0.0" y="363" width="375" height="93"/>
+                                <rect key="frame" x="0.0" y="363" width="375" height="151"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             </pickerView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hDi-1b-Gan">
-                                <rect key="frame" x="159" y="454" width="57" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Request"/>
-                                <connections>
-                                    <action selector="callDroneButton:" destination="2Hw-pM-foI" eventType="touchUpInside" id="G5N-tk-6dD"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wWc-aU-tcU">
                                 <rect key="frame" x="16" y="624" width="343" height="43"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -565,12 +557,20 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="25" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QWz-hB-0jr">
-                                <rect key="frame" x="16" y="464" width="343" height="200"/>
+                                <rect key="frame" x="16" y="506" width="343" height="158"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hDi-1b-Gan">
+                                <rect key="frame" x="159" y="522" width="57" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Request"/>
+                                <connections>
+                                    <action selector="callDroneButton:" destination="2Hw-pM-foI" eventType="touchUpInside" id="G5N-tk-6dD"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="BzE-uE-gMs"/>
@@ -650,9 +650,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Loa-bK-DaS">
-                                <rect key="frame" x="119" y="159" width="137" height="30"/>
+                                <rect key="frame" x="140" y="159" width="96" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Check Drone Status"/>
+                                <state key="normal" title="Drone Battery"/>
                                 <connections>
                                     <action selector="droneStatusButton:" destination="MA3-hc-X43" eventType="touchUpInside" id="d9c-Vo-Kfx"/>
                                 </connections>
@@ -715,9 +715,10 @@
         <image name="icon 3" width="612" height="792"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="9pc-kH-4vQ"/>
         <segue reference="V8x-Pz-3Q9"/>
-        <segue reference="1dD-F2-wEl"/>
+        <segue reference="YwM-eh-oqD"/>
         <segue reference="IWR-9b-lb1"/>
-        <segue reference="vOC-eN-Ifa"/>
+        <segue reference="F92-vI-Xu2"/>
     </inferredMetricsTieBreakers>
 </document>

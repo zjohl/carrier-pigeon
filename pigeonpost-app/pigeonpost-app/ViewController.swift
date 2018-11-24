@@ -657,6 +657,24 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         return waypoints[row]
     }
     
+    var timer : Timer?
+    
+    func newBackgroundTimer() -> Void {
+        DispatchQueue.global(qos: .background).async {
+            
+            // timer calls function check_deliveries every 2 seconds
+            // this function checks for new delivery requests
+            self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.get_status), userInfo: nil, repeats: true)
+            let runLoop = RunLoop.current
+            runLoop.add(self.timer!, forMode: .defaultRunLoopMode)
+            runLoop.run()
+        }
+    }
+    
+    @objc func get_status() {
+        label2.text = "Is it running? \(String(describing: DJISDKManager.missionControl()?.isTimelineRunning))" + "\nRunning element \(DJISDKManager.missionControl()?.runningElement)"
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         DJISDKManager.registerApp(with: self)
@@ -664,17 +682,8 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     //----------------------------------------------------------
     
     // DJISDKManagerDelegate Methods
-    func productConnected(_ product: DJIBaseProduct?) {
-//        if let _ = product {
-//            print("Result True: let _ = product")
-//            if DJISDKManager.product()!.isKind(of: DJIAircraft.self) {
-//                print("Result True: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")
-//                print("Initializing flight controller...")
-//                let flightController = (DJISDKManager.product()! as! DJIAircraft).flightController!
-//                flightController.delegate = (self as! DJIFlightControllerDelegate)
-//            } else { print("Result False: DJISDKManager.product()!.isKind(of: DJIAircraft.self)")}
-//        } else { print("Result False: let _ = product")}
-    }
+    func productConnected(_ product: DJIBaseProduct?) {}
+    
     func productDisconnected() {
         NSLog("Product Disconnected")
     }
@@ -704,6 +713,8 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
             NSLog("Error creating the connectedKey")
             return;
         }
+        
+        newBackgroundTimer()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             DJISDKManager.keyManager()?.startListeningForChanges(on: connectedKey, withListener: self, andUpdate: { (oldValue: DJIKeyedValue?, newValue : DJIKeyedValue?) in
@@ -776,53 +787,30 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     @IBOutlet weak var testLabel: UILabel!
     @IBOutlet weak var callCancel: UIButton!
     
-    var waypoint1_latitude = 0.0
-    var waypoint1_longitude = 0.0
-    var waypoint2_latitude = 0.0
-    var waypoint2_longitude = 0.0
+    var dest_latitude = 0.0
+    var dest_longitude = 0.0
     
     @IBAction func callDroneButton(_ sender: Any) {
         print("Call drone button pressed...")
         
-        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NW Corner" {
-            waypoint1_latitude = 42.31687
-            waypoint1_longitude = -71.104768
-        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SE Corner" {
-            waypoint1_latitude = 42.31644
-            waypoint1_longitude = -71.10438
-        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NE Corner" {
-            waypoint1_latitude = 42.31685
-            waypoint1_longitude = -71.1042
-        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SW Corner" {
-            waypoint1_latitude = 42.3165
-            waypoint1_longitude = -71.10475
-        }
-        waypoint2_latitude = 42.3165
-        waypoint2_longitude = -71.1045
-        
-//        guard let droneLocationKey = DJIFlightControllerKey(param: DJIFlightControllerParamAircraftLocation) else { return }
-//        print("Drone Location Key: \(droneLocationKey)")
-//
-//        guard let keyManager = DJISDKManager.keyManager() else {
-//            label2.text = "Couldn't get the keyManager"
-//            return
+//        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NW Corner" {
+//            dest_latitude = 42.31687
+//            dest_longitude = -71.104768
+//        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SE Corner" {
+//            dest_latitude = 42.31644
+//            dest_longitude = -71.10438
+//        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NE Corner" {
+//            dest_latitude = 42.31685
+//            dest_longitude = -71.1042
+//        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SW Corner" {
+//            dest_latitude = 42.3165
+//            dest_longitude = -71.10475
 //        }
-//        label2.text = "Key Manager: \(keyManager)"
-//
-//        // This isn't working?? Probably because nothing is connected
-//        guard let droneLocationValue = keyManager.getValueFor(droneLocationKey) else {
-//            label1.text = "drone location value failed"
-//            return
-//        }
-//        print("Drone Location Value: \(droneLocationValue)")
-//        label1.text = "Drone Location Value: \(droneLocationValue)"
-//
-//        let droneLocation = droneLocationValue.value as! CLLocation
-//        let origin_waypoint = DJIWaypoint(coordinate: droneLocation.coordinate)
         
-         //Once the above works, use this dict to reference drone location. for now testing with dummy data
-        let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : waypoint1_latitude, "longitude" : waypoint1_longitude], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
-        //let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : lat, "longitude" : long], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
+        dest_latitude = 42.3165268
+        dest_longitude = -71.1046727
+        
+        let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : dest_latitude, "longitude" : dest_longitude], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return }
         
@@ -851,153 +839,78 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         
         if statusCode == 201 {
             
-            //label2.text = "initializing mission"
-            initializeMission()
+            label2.text = "initialize destination coordinate"
+            let coordinate = CLLocationCoordinate2D.init(latitude: CLLocationDegrees(dest_latitude), longitude: CLLocationDegrees(dest_longitude))
             
-//            let alert = UIAlertController(title: "Request Confirmed", message: "The drone is on its way!", preferredStyle: .alert)
-//            let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
-//                (_)in
-//                self.performSegue(withIdentifier: "callDroneToHome", sender: self)
-//            })
-//
-//            alert.addAction(OKAction)
-//            self.present(alert, animated: true, completion: nil)
+            var djiMission = DJIMutableWaypointMission()
+            
+            // Configure the mission
+            djiMission.maxFlightSpeed = 15
+            djiMission.autoFlightSpeed = 8
+            djiMission.finishedAction = .noAction
+            djiMission.headingMode = .auto
+            djiMission.flightPathMode = .normal
+            djiMission.rotateGimbalPitch = true
+            djiMission.exitMissionOnRCSignalLost = true
+            djiMission.gotoFirstWaypointMode = .pointToPoint
+            djiMission.repeatTimes = 1
+            
+            label2.text = "validate mission"
+            if let error = djiMission.checkParameters() {
+                label2.text = "Waypoint Mission parameters are invalid: \(error.localizedDescription)"
+                return
+            }
+            label2.text = "Mission is valid"
+            
+            let missionControl = DJISDKManager.missionControl()
+            if(missionControl == nil) {
+                label2.text = "Invalid mission control"
+            }
+            label2.text = "valid mission control"
+            
+            let error0 = DJISDKManager.missionControl()?.scheduleElement(DJITakeOffAction())
+            if error0 != nil {
+                label2.text = "Error scheduling element \(String(describing: error0))"
+            }
+            
+            let error1 = DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(altitude: 20)!)
+            if error1 != nil {
+                label2.text = "Error scheduling element \(String(describing: error0))"
+            }
+            
+            let error = DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(coordinate: coordinate, altitude: 20)!)
+            if error != nil {
+                label2.text = "Error scheduling element \(String(describing: error))"
+            }
+            
+            DJISDKManager.missionControl()?.startTimeline()
+            
+            label2.text = "Is it running? \(String(describing: DJISDKManager.missionControl()?.isTimelineRunning))" + "\nRunning element \(DJISDKManager.missionControl()?.runningElement)"
+            
+            let alert = UIAlertController(title: "Request Confirmed", message: "The drone is on its way!", preferredStyle: .alert)
+            let OKAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
+                (_)in
+                //self.performSegue(withIdentifier: "callDroneToHome", sender: self)
+            })
+
+            alert.addAction(OKAction)
+            self.present(alert, animated: true, completion: nil)
    
         } else {
             self.showAlertViewWithTitle(title:"Request Failed", withMessage: "An unexpected error occurred. Please try again later.")
             label2.text = "failed"
         }
     }
-    
-    // DJI Mission initialization ------------
-    func initializeMission() {
-        // This is assuming we always have a delivery, if we use the waypoints
-        // from above then we can just pass them in to the mission
-        
-        label2.text = "creating waypoints, coord1"
-        // Create waypoint from origin
-        let coordinate1 = CLLocationCoordinate2D.init(latitude: CLLocationDegrees(waypoint1_latitude), longitude: CLLocationDegrees(waypoint1_longitude))
-        label2.text = "creating waypoints, waypoint1"
-        let waypoint1 = DJIWaypoint.init(coordinate: coordinate1)
-        waypoint1.altitude = 25
-        waypoint1.heading = 0
-        waypoint1.actionRepeatTimes = 1
-        waypoint1.actionTimeoutInSeconds = 60
-        waypoint1.cornerRadiusInMeters = 5
-        waypoint1.turnMode = .clockwise
-        waypoint1.gimbalPitch = 0
-        
-        // Create waypoint from destination
-        label2.text = "creating waypoints, coord2"
-        let coordinate2 = CLLocationCoordinate2D.init(latitude: CLLocationDegrees(waypoint2_latitude), longitude: CLLocationDegrees(waypoint2_longitude))
-        label2.text = "creating waypoints, waypoint2"
-        let waypoint2 = DJIWaypoint.init(coordinate: coordinate2)
-        waypoint2.altitude = 25
-        waypoint2.heading = 0
-        waypoint2.actionRepeatTimes = 1
-        waypoint2.actionTimeoutInSeconds = 60
-        waypoint2.cornerRadiusInMeters = 5
-        waypoint2.turnMode = .clockwise
-        waypoint2.gimbalPitch = 0
-        
-        // Add the waypoints to a mission
-        label2.text = "adding waypoints"
-        var djiMission = DJIMutableWaypointMission()
-        djiMission.add(waypoint1)
-        djiMission.add(waypoint2)
-        
-        label2.text = "4. Configuring mission"
-        // 4. Configure the mission
-//        djiMission.finishedAction = DJIWaypointMissionFinishedAction.noAction
-//        djiMission.autoFlightSpeed = 2
-//        djiMission.maxFlightSpeed = 4
-//        djiMission.headingMode = .auto
-//        djiMission.flightPathMode = .normal
-        
-        djiMission.maxFlightSpeed = 15
-        djiMission.autoFlightSpeed = 8
-        djiMission.finishedAction = .noAction
-        djiMission.headingMode = .auto
-        djiMission.flightPathMode = .normal
-        djiMission.rotateGimbalPitch = true
-        djiMission.exitMissionOnRCSignalLost = true
-        djiMission.gotoFirstWaypointMode = .pointToPoint
-        djiMission.repeatTimes = 1
-        
-        label2.text = "5. Validate mission"
-        // 5. Validate our mission
-        if let error = djiMission.checkParameters() {
-            label2.text = "Waypoint Mission parameters are invalid: \(error.localizedDescription)"
-            return
-        }
-        label2.text = "Mission is valid"
-        
-        // We need to get the mission operator from mission control
-        // Not really sure about this syntax
-        let missionControl = DJISDKManager.missionControl()
-        if(missionControl == nil) {
-            label2.text = "Invalid mission control"
-        }
-        label2.text = "valid mission control"
-        
-        let error0 = DJISDKManager.missionControl()?.scheduleElement(DJITakeOffAction())
-        if error0 != nil {
-            label2.text = "Error scheduling element \(String(describing: error0))"
-        }
-        
-        let error1 = DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(altitude: 60)!)
-        if error1 != nil {
-            label2.text = "Error scheduling element \(String(describing: error0))"
-        }
-  
-        let error = DJISDKManager.missionControl()?.scheduleElement(DJIWaypointMission(mission: djiMission))
-
-        if error != nil {
-            label2.text = "Error scheduling element \(String(describing: error))"
-        }
-        DJISDKManager.missionControl()?.startTimeline()
-        
-        label2.text = "Is it running? \(String(describing: DJISDKManager.missionControl()?.isTimelineRunning))" + "\nRunning element \(DJISDKManager.missionControl()?.runningElement)"
-        
-//        let waypointMissionOperator = missionControl!.waypointMissionOperator()
-//
-//        // 6.
-//        if let error = waypointMissionOperator.load(DJIWaypointMission(mission: djiMission)) {
-//            label2.text = "Waypoint mission operator load failed " + error.localizedDescription
-//        }
-//        label2.text = "loaded"
-//
-//        // 7.
-//        waypointMissionOperator.addListener(toUploadEvent: self, with: DispatchQueue.main) { error in
-//            self.label2.text = "Upload"
-//            if error.currentState.rawValue == 5 {
-//                // start mission
-//                waypointMissionOperator.startMission(completion: { error in
-//                    if let error = error {
-//                        self.label2.text = "Error starting mission" + error.localizedDescription
-//                    }
-//                    self.label2.text = "Mission started successfully"
-//                })
-//            }
-//        }
-//
-//        // 8.
-//        waypointMissionOperator.uploadMission() { error in
-//            if let error = error {
-//                self.label2.text = "Upload error: " + error.localizedDescription
-//            }
-//        }
-        
-    }
 }
 
 
 // DELIVERIES PAGE
-class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, DJISDKManagerDelegate {
     
     var timer : Timer?
     override func viewDidLoad() {
         super.viewDidLoad()
+        DJISDKManager.registerApp(with: self)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -1015,6 +928,23 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
             let runLoop = RunLoop.current
             runLoop.add(self.timer!, forMode: .defaultRunLoopMode)
             runLoop.run()
+        }
+    }
+    
+    // DJISDKManagerDelegate Methods
+    func productConnected(_ product: DJIBaseProduct?) {}
+    
+    func productDisconnected() {
+        NSLog("Product Disconnected")
+    }
+    
+    func appRegisteredWithError(_ error: Error?) {
+        
+        if (error != nil) {
+            print("Register App Failed!")
+        } else {
+            print("Register App Succeeded! Starting connection to product...")
+            DJISDKManager.startConnectionToProduct()
         }
     }
     
@@ -1134,7 +1064,31 @@ class DeliveriesViewController: UIViewController, UITableViewDelegate, UITableVi
                         }.resume()
                     _ = semaphore.wait(timeout: DispatchTime.distantFuture)
                     
-                    //TODO: INITIALIZE DRONE MISSION
+                    // INITIALIZE DRONE MISSION
+                    let coordinate = CLLocationCoordinate2D.init(latitude: CLLocationDegrees(delivery.destination.latitude!), longitude: CLLocationDegrees(delivery.destination.longitude!))
+                    
+                    var djiMission = DJIMutableWaypointMission()
+                    
+                    // Configure the mission
+                    djiMission.maxFlightSpeed = 15
+                    djiMission.autoFlightSpeed = 8
+                    djiMission.finishedAction = .noAction
+                    djiMission.headingMode = .auto
+                    djiMission.flightPathMode = .normal
+                    djiMission.rotateGimbalPitch = true
+                    djiMission.exitMissionOnRCSignalLost = true
+                    djiMission.gotoFirstWaypointMode = .pointToPoint
+                    djiMission.repeatTimes = 1
+                    
+                    if let error = djiMission.checkParameters() {
+                        print("Waypoint Mission parameters are invalid: \(error.localizedDescription)")
+                    }
+
+                    DJISDKManager.missionControl()
+                    DJISDKManager.missionControl()?.scheduleElement(DJITakeOffAction())
+                    DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(altitude: 20)!)
+                    DJISDKManager.missionControl()?.scheduleElement(DJIGoToAction(coordinate: coordinate, altitude: 20)!)
+                    DJISDKManager.missionControl()?.startTimeline()
                     
                     //stop the timer
                     if self.timer != nil {
