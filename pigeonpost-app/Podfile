@@ -2,4 +2,5 @@
 
 target 'pigeonpost-app' do
   pod 'DJI-SDK-iOS', '~> 4.7.1'
+  pod 'CryptoSwift', :git => "https://github.com/krzyzanowskim/CryptoSwift", :branch => "master"
 end

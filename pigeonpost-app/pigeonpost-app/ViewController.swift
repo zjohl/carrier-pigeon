@@ -79,9 +79,8 @@ struct deliveries_response: Decodable {
     var deliveries: [delivery]
 }
 
+
 //VIEW CONTROLLERS
-
-
 class ViewController: UIViewController {
     
     // login page
@@ -117,7 +116,7 @@ class ViewController: UIViewController {
 
     // LOGIN PAGE  *********************************
     @IBAction func loginButton(_ sender: Any) {
-        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/auth?email=" + username.text! + "&password=" + password.text!) else { return }
+        guard let url = URL(string: "https://shielded-mesa-50019.herokuapp.com/api/auth?email=" + username.text! + "&password=" + password.text!.sha256()) else { return }
         
         var success: Bool = false
         var request = URLRequest(url: url)
@@ -174,7 +173,7 @@ class ViewController: UIViewController {
          newUsrErr.text = "Password must be greater than 3 characters."
          } else {
         
-        let dict = ["email":email.text!, "first_name": fname.text!, "last_name": lname.text!,"password":newPswd.text! ] as [String : Any]
+        let dict = ["email":email.text!, "first_name": fname.text!, "last_name": lname.text!,"password":newPswd.text!.sha256() ] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
             return

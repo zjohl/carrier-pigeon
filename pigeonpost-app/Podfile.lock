@@ -1,16 +1,29 @@
 PODS:
+  - CryptoSwift (0.13.1)
   - DJI-SDK-iOS (4.7.1)
 
 DEPENDENCIES:
+  - CryptoSwift (from `https://github.com/krzyzanowskim/CryptoSwift`, branch `master`)
   - DJI-SDK-iOS (~> 4.7.1)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - DJI-SDK-iOS
 
+EXTERNAL SOURCES:
+  CryptoSwift:
+    :branch: master
+    :git: https://github.com/krzyzanowskim/CryptoSwift
+
+CHECKOUT OPTIONS:
+  CryptoSwift:
+    :commit: 288692d159d1babc245a031dc59be759efd531bc
+    :git: https://github.com/krzyzanowskim/CryptoSwift
+
 SPEC CHECKSUMS:
+  CryptoSwift: ff68c35a53e03177d31aaa2c1e8b3e010aeed6cb
   DJI-SDK-iOS: 61190de33ed627dee3171f40146386c31b1d6c09
 
-PODFILE CHECKSUM: d08714e442a58d3256cce3e292c46c18b2dec0d8
+PODFILE CHECKSUM: a8a8bdd9bedb04447b3aca6f2c272088da94d0d4
 
 COCOAPODS: 1.5.3

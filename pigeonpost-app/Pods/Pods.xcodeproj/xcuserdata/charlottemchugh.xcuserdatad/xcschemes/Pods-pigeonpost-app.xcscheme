@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E7C1EE79E4755B7288D4EC8E988204FB"
+               BlueprintIdentifier = "2BBE25FF5E61CE4004A014C6F7DC6183"
                BlueprintName = "Pods-pigeonpost-app"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "libPods-pigeonpost-app.a">
