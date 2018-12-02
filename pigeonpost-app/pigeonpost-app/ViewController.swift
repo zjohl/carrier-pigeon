@@ -268,10 +268,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         if (error != nil) {
             print("Register App Failed!")
-            self.showAlertViewWithTitle(title:"Register Error", withMessage: "Register App Failed!")
+            //self.showAlertViewWithTitle(title:"Register Error", withMessage: "Register App Failed!")
         } else {
             print("Register App Succeeded! Starting connection to product...")
-            self.showAlertViewWithTitle(title:"Register App Successful", withMessage: "Register App Succeeded! Starting connection to product...")
+            //self.showAlertViewWithTitle(title:"Register App Successful", withMessage: "Register App Succeeded! Starting connection to product...")
             DJISDKManager.startConnectionToProduct()
         }
     }
@@ -300,6 +300,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             // DJIBatteryParamChargeRemainingInPercent is associated with a uint8_t value
             self.droneStatusLabel.text = "\(value!.unsignedIntegerValue) %"
         })
+        
+        //validate
+        if self.droneStatusLabel.text == "" {
+            self.droneStatusLabel.text = "Transmitter disconnected"
+        }
     }
     
     @IBAction func callDroneButton(_ sender: Any) {
@@ -793,22 +798,19 @@ class CallDroneViewController: UIViewController, UIPickerViewDelegate, UIPickerV
     @IBAction func callDroneButton(_ sender: Any) {
         print("Call drone button pressed...")
         
-//        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NW Corner" {
-//            dest_latitude = 42.31687
-//            dest_longitude = -71.104768
-//        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SE Corner" {
-//            dest_latitude = 42.31644
-//            dest_longitude = -71.10438
-//        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NE Corner" {
-//            dest_latitude = 42.31685
-//            dest_longitude = -71.1042
-//        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SW Corner" {
-//            dest_latitude = 42.3165
-//            dest_longitude = -71.10475
-//        }
-        
-        dest_latitude = 42.3165268
-        dest_longitude = -71.1046727
+        if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NW Corner" {
+            dest_latitude = 42.31687
+            dest_longitude = -71.104768
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SE Corner" {
+            dest_latitude = 42.31644
+            dest_longitude = -71.10438
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - NE Corner" {
+            dest_latitude = 42.31685
+            dest_longitude = -71.1042
+        } else if waypoints[pickerView.selectedRow(inComponent: 0)] == "Stony Brook - SW Corner" {
+            dest_latitude = 42.3165
+            dest_longitude = -71.10475
+        }
         
         let dict = ["drone_id" : 0, "status" : "in_progress", "origin": ["latitude" : 0, "longitude" : 0], "destination" : ["latitude" : dest_latitude, "longitude" : dest_longitude], "sender_id" : currentUser.id, "receiver_id" : currentUser.id] as [String : Any]
         
