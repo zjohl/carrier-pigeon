@@ -9,6 +9,7 @@
 import UIKit
 import DJISDK
 import Foundation
+import CryptoSwift
 
 var currentUser = user(firstName: "", lastName: "", email: "", id: 0, password: "")
 var currentDeliveryId = 0
@@ -326,7 +327,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             guard let data = data else { return }
             do {
                 let result = try JSONDecoder().decode(deliveries_response.self, from: data)
-                print("\n\nResult: \(result)")
+                //print("\n\nResult: \(result)")
                 deliveries = result.deliveries
                 
             } catch {
@@ -343,21 +344,34 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             if delivery.status == "in_progress" || delivery.status == "requested" || delivery.status == "accepted" || delivery.status == "confirmed" {
                 if delivery.sender.id == delivery.receiver.id {
                     message = "Your drone is already on its way! Check its status from the Deliveries page."
-                    print(message)
+                    //print(message)
                     summon_in_progress = true
                 } else {
                     message = "A delivery is already in progress! Please try again later."
-                    print(message)
+                    //print(message)
                     summon_in_progress = true
                 }
             }
         }
         
-        if !summon_in_progress {
-            performSegue(withIdentifier: "homeToCallDrone", sender: sender)
-        } else {
+        var drone_status = ""
+        let batteryLevelKey = DJIBatteryKey(param: DJIBatteryParamChargeRemainingInPercent)
+        DJISDKManager.keyManager()?.getValueFor(batteryLevelKey!, withCompletion: { [unowned self] (value: DJIKeyedValue?, error: Error?) in
+            guard error == nil && value != nil else {
+                return
+            }
+            // DJIBatteryParamChargeRemainingInPercent is associated with a uint8_t value
+            drone_status = "\(value!.unsignedIntegerValue) %"
+        })
+        
+        if summon_in_progress {
             self.showAlertViewWithTitle(title:"Drone Unavailable", withMessage: message)
+        } else if drone_status == "" {
+            self.showAlertViewWithTitle(title:"Drone Unavailable", withMessage: "Your device is not connected to the transmitter.")
+        } else {
+            performSegue(withIdentifier: "homeToCallDrone", sender: sender)
         }
+        
     }
     
     @IBAction func sendDroneButton(_ sender: Any) {
@@ -407,8 +421,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         
+        var drone_status = ""
+        let batteryLevelKey = DJIBatteryKey(param: DJIBatteryParamChargeRemainingInPercent)
+        DJISDKManager.keyManager()?.getValueFor(batteryLevelKey!, withCompletion: { [unowned self] (value: DJIKeyedValue?, error: Error?) in
+            guard error == nil && value != nil else {
+                return
+            }
+            // DJIBatteryParamChargeRemainingInPercent is associated with a uint8_t value
+            drone_status = "\(value!.unsignedIntegerValue) %"
+        })
+        
         if delivery_in_progress {
             self.showAlertViewWithTitle(title:"Drone Unavailable", withMessage: message)
+        } else if drone_status == "" {
+            self.showAlertViewWithTitle(title:"Drone Unavailable", withMessage: "Your device is not connected to the transmitter.")
         } else {
             //----------------------------
             // post delivery
@@ -529,8 +555,8 @@ class ContactsViewController: UIViewController, UITableViewDelegate, UITableView
     
     var contactNames = [String]()
     var contacts = [contact]()
-    @IBOutlet weak var email: UITextField!
     @IBOutlet weak var contactsTable: UITableView!
+    @IBOutlet weak var email: UITextField!
     @IBOutlet weak var confirmationLabel: UILabel!
     
     override func viewDidLoad() {
@@ -592,7 +618,8 @@ class ContactsViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     @IBAction func sendRequestButton(_ sender: Any) {
-        
+        print("currentUser.email: \(currentUser.email)")
+        print("email.text: \(email.text)")
         let dict = ["user_email_1":currentUser.email, "user_email_2": email.text!] as [String : Any]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) else {
@@ -624,6 +651,7 @@ class ContactsViewController: UIViewController, UITableViewDelegate, UITableView
             email.text! = ""
             confirmationLabel.text! = "Contact added!"
             print("Contact added successfully")
+            viewDidLoad()
             viewWillAppear(true)
         }
         else {
